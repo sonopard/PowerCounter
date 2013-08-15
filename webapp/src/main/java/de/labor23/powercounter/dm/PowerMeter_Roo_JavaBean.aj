@@ -7,14 +7,6 @@ import de.labor23.powercounter.dm.PowerMeter;
 
 privileged aspect PowerMeter_Roo_JavaBean {
     
-    public Integer PowerMeter.getGpioId() {
-        return this.gpioId;
-    }
-    
-    public void PowerMeter.setGpioId(Integer gpioId) {
-        this.gpioId = gpioId;
-    }
-    
     public String PowerMeter.getMeterName() {
         return this.meterName;
     }

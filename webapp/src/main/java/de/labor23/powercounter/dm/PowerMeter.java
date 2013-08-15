@@ -14,13 +14,6 @@ public class PowerMeter {
 
     /**
      */
-    @NotNull
-    @Column(unique = true)
-    @Min(1L)
-    private Integer gpioId;
-
-    /**
-     */
     private String meterName;
 
     /**

@@ -17,7 +17,6 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.component.html.HtmlOutputText;
 import javax.faces.component.html.HtmlPanelGrid;
 import javax.faces.context.FacesContext;
-import javax.faces.validator.LongRangeValidator;
 import org.primefaces.component.inputtext.InputText;
 import org.primefaces.component.message.Message;
 import org.primefaces.component.outputlabel.OutputLabel;
@@ -52,7 +51,6 @@ privileged aspect PowerMeterBean_Roo_ManagedBean {
     @PostConstruct
     public void PowerMeterBean.init() {
         columns = new ArrayList<String>();
-        columns.add("gpioId");
         columns.add("meterName");
         columns.add("address");
         columns.add("ticksPerKWH");
@@ -126,29 +124,6 @@ privileged aspect PowerMeterBean_Roo_ManagedBean {
         
         HtmlPanelGrid htmlPanelGrid = (HtmlPanelGrid) application.createComponent(HtmlPanelGrid.COMPONENT_TYPE);
         
-        OutputLabel gpioIdCreateOutput = (OutputLabel) application.createComponent(OutputLabel.COMPONENT_TYPE);
-        gpioIdCreateOutput.setFor("gpioIdCreateInput");
-        gpioIdCreateOutput.setId("gpioIdCreateOutput");
-        gpioIdCreateOutput.setValue("Gpio Id:");
-        htmlPanelGrid.getChildren().add(gpioIdCreateOutput);
-        
-        Spinner gpioIdCreateInput = (Spinner) application.createComponent(Spinner.COMPONENT_TYPE);
-        gpioIdCreateInput.setId("gpioIdCreateInput");
-        gpioIdCreateInput.setValueExpression("value", expressionFactory.createValueExpression(elContext, "#{powerMeterBean.powerMeter.gpioId}", Integer.class));
-        gpioIdCreateInput.setRequired(true);
-        gpioIdCreateInput.setMin(1.0);
-        LongRangeValidator gpioIdCreateInputValidator = new LongRangeValidator();
-        gpioIdCreateInputValidator.setMinimum(1);
-        gpioIdCreateInput.addValidator(gpioIdCreateInputValidator);
-        
-        htmlPanelGrid.getChildren().add(gpioIdCreateInput);
-        
-        Message gpioIdCreateInputMessage = (Message) application.createComponent(Message.COMPONENT_TYPE);
-        gpioIdCreateInputMessage.setId("gpioIdCreateInputMessage");
-        gpioIdCreateInputMessage.setFor("gpioIdCreateInput");
-        gpioIdCreateInputMessage.setDisplay("icon");
-        htmlPanelGrid.getChildren().add(gpioIdCreateInputMessage);
-        
         OutputLabel meterNameCreateOutput = (OutputLabel) application.createComponent(OutputLabel.COMPONENT_TYPE);
         meterNameCreateOutput.setFor("meterNameCreateInput");
         meterNameCreateOutput.setId("meterNameCreateOutput");
@@ -215,29 +190,6 @@ privileged aspect PowerMeterBean_Roo_ManagedBean {
         
         HtmlPanelGrid htmlPanelGrid = (HtmlPanelGrid) application.createComponent(HtmlPanelGrid.COMPONENT_TYPE);
         
-        OutputLabel gpioIdEditOutput = (OutputLabel) application.createComponent(OutputLabel.COMPONENT_TYPE);
-        gpioIdEditOutput.setFor("gpioIdEditInput");
-        gpioIdEditOutput.setId("gpioIdEditOutput");
-        gpioIdEditOutput.setValue("Gpio Id:");
-        htmlPanelGrid.getChildren().add(gpioIdEditOutput);
-        
-        Spinner gpioIdEditInput = (Spinner) application.createComponent(Spinner.COMPONENT_TYPE);
-        gpioIdEditInput.setId("gpioIdEditInput");
-        gpioIdEditInput.setValueExpression("value", expressionFactory.createValueExpression(elContext, "#{powerMeterBean.powerMeter.gpioId}", Integer.class));
-        gpioIdEditInput.setRequired(true);
-        gpioIdEditInput.setMin(1.0);
-        LongRangeValidator gpioIdEditInputValidator = new LongRangeValidator();
-        gpioIdEditInputValidator.setMinimum(1);
-        gpioIdEditInput.addValidator(gpioIdEditInputValidator);
-        
-        htmlPanelGrid.getChildren().add(gpioIdEditInput);
-        
-        Message gpioIdEditInputMessage = (Message) application.createComponent(Message.COMPONENT_TYPE);
-        gpioIdEditInputMessage.setId("gpioIdEditInputMessage");
-        gpioIdEditInputMessage.setFor("gpioIdEditInput");
-        gpioIdEditInputMessage.setDisplay("icon");
-        htmlPanelGrid.getChildren().add(gpioIdEditInputMessage);
-        
         OutputLabel meterNameEditOutput = (OutputLabel) application.createComponent(OutputLabel.COMPONENT_TYPE);
         meterNameEditOutput.setFor("meterNameEditInput");
         meterNameEditOutput.setId("meterNameEditOutput");
@@ -303,15 +255,6 @@ privileged aspect PowerMeterBean_Roo_ManagedBean {
         ELContext elContext = facesContext.getELContext();
         
         HtmlPanelGrid htmlPanelGrid = (HtmlPanelGrid) application.createComponent(HtmlPanelGrid.COMPONENT_TYPE);
-        
-        HtmlOutputText gpioIdLabel = (HtmlOutputText) application.createComponent(HtmlOutputText.COMPONENT_TYPE);
-        gpioIdLabel.setId("gpioIdLabel");
-        gpioIdLabel.setValue("Gpio Id:");
-        htmlPanelGrid.getChildren().add(gpioIdLabel);
-        
-        HtmlOutputText gpioIdValue = (HtmlOutputText) application.createComponent(HtmlOutputText.COMPONENT_TYPE);
-        gpioIdValue.setValueExpression("value", expressionFactory.createValueExpression(elContext, "#{powerMeterBean.powerMeter.gpioId}", String.class));
-        htmlPanelGrid.getChildren().add(gpioIdValue);
         
         HtmlOutputText meterNameLabel = (HtmlOutputText) application.createComponent(HtmlOutputText.COMPONENT_TYPE);
         meterNameLabel.setId("meterNameLabel");

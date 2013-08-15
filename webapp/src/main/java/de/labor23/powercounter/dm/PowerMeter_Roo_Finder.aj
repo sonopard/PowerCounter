@@ -17,12 +17,4 @@ privileged aspect PowerMeter_Roo_Finder {
         return q;
     }
     
-    public static TypedQuery<PowerMeter> PowerMeter.findPowerMetersByGpioIdEquals(Integer gpioId) {
-        if (gpioId == null) throw new IllegalArgumentException("The gpioId argument is required");
-        EntityManager em = PowerMeter.entityManager();
-        TypedQuery<PowerMeter> q = em.createQuery("SELECT o FROM PowerMeter AS o WHERE o.gpioId = :gpioId", PowerMeter.class);
-        q.setParameter("gpioId", gpioId);
-        return q;
-    }
-    
 }
