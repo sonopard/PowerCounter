@@ -54,6 +54,8 @@ privileged aspect PowerMeterBean_Roo_ManagedBean {
         columns = new ArrayList<String>();
         columns.add("gpioId");
         columns.add("meterName");
+        columns.add("address");
+        columns.add("ticksPerKWH");
     }
     
     public String PowerMeterBean.getName() {
@@ -165,6 +167,43 @@ privileged aspect PowerMeterBean_Roo_ManagedBean {
         meterNameCreateInputMessage.setDisplay("icon");
         htmlPanelGrid.getChildren().add(meterNameCreateInputMessage);
         
+        OutputLabel addressCreateOutput = (OutputLabel) application.createComponent(OutputLabel.COMPONENT_TYPE);
+        addressCreateOutput.setFor("addressCreateInput");
+        addressCreateOutput.setId("addressCreateOutput");
+        addressCreateOutput.setValue("Address:");
+        htmlPanelGrid.getChildren().add(addressCreateOutput);
+        
+        InputText addressCreateInput = (InputText) application.createComponent(InputText.COMPONENT_TYPE);
+        addressCreateInput.setId("addressCreateInput");
+        addressCreateInput.setValueExpression("value", expressionFactory.createValueExpression(elContext, "#{powerMeterBean.powerMeter.address}", Byte.class));
+        addressCreateInput.setRequired(true);
+        htmlPanelGrid.getChildren().add(addressCreateInput);
+        
+        Message addressCreateInputMessage = (Message) application.createComponent(Message.COMPONENT_TYPE);
+        addressCreateInputMessage.setId("addressCreateInputMessage");
+        addressCreateInputMessage.setFor("addressCreateInput");
+        addressCreateInputMessage.setDisplay("icon");
+        htmlPanelGrid.getChildren().add(addressCreateInputMessage);
+        
+        OutputLabel ticksPerKWHCreateOutput = (OutputLabel) application.createComponent(OutputLabel.COMPONENT_TYPE);
+        ticksPerKWHCreateOutput.setFor("ticksPerKWHCreateInput");
+        ticksPerKWHCreateOutput.setId("ticksPerKWHCreateOutput");
+        ticksPerKWHCreateOutput.setValue("Ticks Per K W H:");
+        htmlPanelGrid.getChildren().add(ticksPerKWHCreateOutput);
+        
+        Spinner ticksPerKWHCreateInput = (Spinner) application.createComponent(Spinner.COMPONENT_TYPE);
+        ticksPerKWHCreateInput.setId("ticksPerKWHCreateInput");
+        ticksPerKWHCreateInput.setValueExpression("value", expressionFactory.createValueExpression(elContext, "#{powerMeterBean.powerMeter.ticksPerKWH}", Integer.class));
+        ticksPerKWHCreateInput.setRequired(true);
+        
+        htmlPanelGrid.getChildren().add(ticksPerKWHCreateInput);
+        
+        Message ticksPerKWHCreateInputMessage = (Message) application.createComponent(Message.COMPONENT_TYPE);
+        ticksPerKWHCreateInputMessage.setId("ticksPerKWHCreateInputMessage");
+        ticksPerKWHCreateInputMessage.setFor("ticksPerKWHCreateInput");
+        ticksPerKWHCreateInputMessage.setDisplay("icon");
+        htmlPanelGrid.getChildren().add(ticksPerKWHCreateInputMessage);
+        
         return htmlPanelGrid;
     }
     
@@ -217,6 +256,43 @@ privileged aspect PowerMeterBean_Roo_ManagedBean {
         meterNameEditInputMessage.setDisplay("icon");
         htmlPanelGrid.getChildren().add(meterNameEditInputMessage);
         
+        OutputLabel addressEditOutput = (OutputLabel) application.createComponent(OutputLabel.COMPONENT_TYPE);
+        addressEditOutput.setFor("addressEditInput");
+        addressEditOutput.setId("addressEditOutput");
+        addressEditOutput.setValue("Address:");
+        htmlPanelGrid.getChildren().add(addressEditOutput);
+        
+        InputText addressEditInput = (InputText) application.createComponent(InputText.COMPONENT_TYPE);
+        addressEditInput.setId("addressEditInput");
+        addressEditInput.setValueExpression("value", expressionFactory.createValueExpression(elContext, "#{powerMeterBean.powerMeter.address}", Byte.class));
+        addressEditInput.setRequired(true);
+        htmlPanelGrid.getChildren().add(addressEditInput);
+        
+        Message addressEditInputMessage = (Message) application.createComponent(Message.COMPONENT_TYPE);
+        addressEditInputMessage.setId("addressEditInputMessage");
+        addressEditInputMessage.setFor("addressEditInput");
+        addressEditInputMessage.setDisplay("icon");
+        htmlPanelGrid.getChildren().add(addressEditInputMessage);
+        
+        OutputLabel ticksPerKWHEditOutput = (OutputLabel) application.createComponent(OutputLabel.COMPONENT_TYPE);
+        ticksPerKWHEditOutput.setFor("ticksPerKWHEditInput");
+        ticksPerKWHEditOutput.setId("ticksPerKWHEditOutput");
+        ticksPerKWHEditOutput.setValue("Ticks Per K W H:");
+        htmlPanelGrid.getChildren().add(ticksPerKWHEditOutput);
+        
+        Spinner ticksPerKWHEditInput = (Spinner) application.createComponent(Spinner.COMPONENT_TYPE);
+        ticksPerKWHEditInput.setId("ticksPerKWHEditInput");
+        ticksPerKWHEditInput.setValueExpression("value", expressionFactory.createValueExpression(elContext, "#{powerMeterBean.powerMeter.ticksPerKWH}", Integer.class));
+        ticksPerKWHEditInput.setRequired(true);
+        
+        htmlPanelGrid.getChildren().add(ticksPerKWHEditInput);
+        
+        Message ticksPerKWHEditInputMessage = (Message) application.createComponent(Message.COMPONENT_TYPE);
+        ticksPerKWHEditInputMessage.setId("ticksPerKWHEditInputMessage");
+        ticksPerKWHEditInputMessage.setFor("ticksPerKWHEditInput");
+        ticksPerKWHEditInputMessage.setDisplay("icon");
+        htmlPanelGrid.getChildren().add(ticksPerKWHEditInputMessage);
+        
         return htmlPanelGrid;
     }
     
@@ -246,6 +322,24 @@ privileged aspect PowerMeterBean_Roo_ManagedBean {
         meterNameValue.setId("meterNameValue");
         meterNameValue.setValueExpression("value", expressionFactory.createValueExpression(elContext, "#{powerMeterBean.powerMeter.meterName}", String.class));
         htmlPanelGrid.getChildren().add(meterNameValue);
+        
+        HtmlOutputText addressLabel = (HtmlOutputText) application.createComponent(HtmlOutputText.COMPONENT_TYPE);
+        addressLabel.setId("addressLabel");
+        addressLabel.setValue("Address:");
+        htmlPanelGrid.getChildren().add(addressLabel);
+        
+        HtmlOutputText addressValue = (HtmlOutputText) application.createComponent(HtmlOutputText.COMPONENT_TYPE);
+        addressValue.setValueExpression("value", expressionFactory.createValueExpression(elContext, "#{powerMeterBean.powerMeter.address}", String.class));
+        htmlPanelGrid.getChildren().add(addressValue);
+        
+        HtmlOutputText ticksPerKWHLabel = (HtmlOutputText) application.createComponent(HtmlOutputText.COMPONENT_TYPE);
+        ticksPerKWHLabel.setId("ticksPerKWHLabel");
+        ticksPerKWHLabel.setValue("Ticks Per K W H:");
+        htmlPanelGrid.getChildren().add(ticksPerKWHLabel);
+        
+        HtmlOutputText ticksPerKWHValue = (HtmlOutputText) application.createComponent(HtmlOutputText.COMPONENT_TYPE);
+        ticksPerKWHValue.setValueExpression("value", expressionFactory.createValueExpression(elContext, "#{powerMeterBean.powerMeter.ticksPerKWH}", String.class));
+        htmlPanelGrid.getChildren().add(ticksPerKWHValue);
         
         return htmlPanelGrid;
     }

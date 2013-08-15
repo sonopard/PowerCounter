@@ -24,9 +24,16 @@ privileged aspect PowerMeterDataOnDemand_Roo_DataOnDemand {
     
     public PowerMeter PowerMeterDataOnDemand.getNewTransientPowerMeter(int index) {
         PowerMeter obj = new PowerMeter();
+        setAddress(obj, index);
         setGpioId(obj, index);
         setMeterName(obj, index);
+        setTicksPerKWH(obj, index);
         return obj;
+    }
+    
+    public void PowerMeterDataOnDemand.setAddress(PowerMeter obj, int index) {
+        Byte address = new Byte("1");
+        obj.setAddress(address);
     }
     
     public void PowerMeterDataOnDemand.setGpioId(PowerMeter obj, int index) {
@@ -40,6 +47,11 @@ privileged aspect PowerMeterDataOnDemand_Roo_DataOnDemand {
     public void PowerMeterDataOnDemand.setMeterName(PowerMeter obj, int index) {
         String meterName = "meterName_" + index;
         obj.setMeterName(meterName);
+    }
+    
+    public void PowerMeterDataOnDemand.setTicksPerKWH(PowerMeter obj, int index) {
+        Integer ticksPerKWH = new Integer(index);
+        obj.setTicksPerKWH(ticksPerKWH);
     }
     
     public PowerMeter PowerMeterDataOnDemand.getSpecificPowerMeter(int index) {

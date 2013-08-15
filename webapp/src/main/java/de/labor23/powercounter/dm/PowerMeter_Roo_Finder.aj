@@ -9,6 +9,14 @@ import javax.persistence.TypedQuery;
 
 privileged aspect PowerMeter_Roo_Finder {
     
+    public static TypedQuery<PowerMeter> PowerMeter.findPowerMetersByAddress(Byte address) {
+        if (address == null) throw new IllegalArgumentException("The address argument is required");
+        EntityManager em = PowerMeter.entityManager();
+        TypedQuery<PowerMeter> q = em.createQuery("SELECT o FROM PowerMeter AS o WHERE o.address = :address", PowerMeter.class);
+        q.setParameter("address", address);
+        return q;
+    }
+    
     public static TypedQuery<PowerMeter> PowerMeter.findPowerMetersByGpioIdEquals(Integer gpioId) {
         if (gpioId == null) throw new IllegalArgumentException("The gpioId argument is required");
         EntityManager em = PowerMeter.entityManager();

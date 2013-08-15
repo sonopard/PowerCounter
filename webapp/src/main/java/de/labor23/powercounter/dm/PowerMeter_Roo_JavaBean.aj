@@ -23,4 +23,20 @@ privileged aspect PowerMeter_Roo_JavaBean {
         this.meterName = meterName;
     }
     
+    public Byte PowerMeter.getAddress() {
+        return this.address;
+    }
+    
+    public void PowerMeter.setAddress(Byte address) {
+        this.address = address;
+    }
+    
+    public Integer PowerMeter.getTicksPerKWH() {
+        return this.ticksPerKWH;
+    }
+    
+    public void PowerMeter.setTicksPerKWH(Integer ticksPerKWH) {
+        this.ticksPerKWH = ticksPerKWH;
+    }
+    
 }
