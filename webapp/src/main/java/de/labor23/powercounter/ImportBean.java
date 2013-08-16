@@ -1,11 +1,9 @@
 package de.labor23.powercounter;
 
-import java.util.Calendar;
 import java.util.Date;
 
 import javax.annotation.PostConstruct;
 
-import org.primefaces.model.chart.LineChartSeries;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,11 +29,11 @@ public class ImportBean {
 		p.setAddress((byte) 23);
 		p.setBank(Bank.LOWER_BANK);
 		p.setMeterName("AV labordomäne");
+		p.setUser(u);
 		p.persist();
 		
-		u.getPowerMeters().add(p);
-		u.merge();	
-		
+
+		System.out.println(u.getPowerMeters());
 
 		Tick t;
         Date now = new Date();

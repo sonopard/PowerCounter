@@ -1,9 +1,29 @@
 package de.labor23.powercounter.web;
-import de.labor23.powercounter.dm.PowerMeter;
-import org.springframework.roo.addon.jsf.managedbean.RooJsfManagedBean;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
+
+import org.springframework.roo.addon.configurable.RooConfigurable;
+import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.serializable.RooSerializable;
 
+import de.labor23.powercounter.dm.PowerMeter;
+
 @RooSerializable
-@RooJsfManagedBean(entity = PowerMeter.class, beanName = "powerMeterBean")
+@RooJavaBean
+@RooConfigurable
+@ManagedBean
+@ViewScoped
 public class PowerMeterBean {
+	private PowerMeter powerMeter;
+	
+	private List<PowerMeter> allPowerMeters;
+	
+	@PostConstruct
+	private void setUp() {
+		allPowerMeters = PowerMeter.findAllPowerMeters();
+	}
+	
 }

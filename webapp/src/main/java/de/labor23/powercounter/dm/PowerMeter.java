@@ -41,6 +41,7 @@ public class PowerMeter {
     @Value("2000")
     private Integer ticksPerKWH;
     
+    
     @NotNull
     @ManyToOne
     private User user;

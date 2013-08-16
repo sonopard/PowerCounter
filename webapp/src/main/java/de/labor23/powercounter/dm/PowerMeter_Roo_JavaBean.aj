@@ -4,6 +4,7 @@
 package de.labor23.powercounter.dm;
 
 import de.labor23.powercounter.dm.PowerMeter;
+import de.labor23.powercounter.dm.User;
 import de.labor23.powercounter.dm.hardware.Bank;
 
 privileged aspect PowerMeter_Roo_JavaBean {
@@ -38,6 +39,14 @@ privileged aspect PowerMeter_Roo_JavaBean {
     
     public void PowerMeter.setTicksPerKWH(Integer ticksPerKWH) {
         this.ticksPerKWH = ticksPerKWH;
+    }
+    
+    public User PowerMeter.getUser() {
+        return this.user;
+    }
+    
+    public void PowerMeter.setUser(User user) {
+        this.user = user;
     }
     
 }
