@@ -5,6 +5,7 @@ package de.labor23.powercounter.dm;
 
 import de.labor23.powercounter.dm.PowerMeter;
 import de.labor23.powercounter.dm.PowerMeterDataOnDemand;
+import de.labor23.powercounter.dm.hardware.Bank;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -25,6 +26,7 @@ privileged aspect PowerMeterDataOnDemand_Roo_DataOnDemand {
     public PowerMeter PowerMeterDataOnDemand.getNewTransientPowerMeter(int index) {
         PowerMeter obj = new PowerMeter();
         setAddress(obj, index);
+        setBank(obj, index);
         setMeterName(obj, index);
         setTicksPerKWH(obj, index);
         return obj;
@@ -33,6 +35,11 @@ privileged aspect PowerMeterDataOnDemand_Roo_DataOnDemand {
     public void PowerMeterDataOnDemand.setAddress(PowerMeter obj, int index) {
         Byte address = new Byte("1");
         obj.setAddress(address);
+    }
+    
+    public void PowerMeterDataOnDemand.setBank(PowerMeter obj, int index) {
+        Bank bank = Bank.class.getEnumConstants()[0];
+        obj.setBank(bank);
     }
     
     public void PowerMeterDataOnDemand.setMeterName(PowerMeter obj, int index) {

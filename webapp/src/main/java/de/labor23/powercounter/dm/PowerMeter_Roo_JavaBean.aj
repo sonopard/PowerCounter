@@ -4,6 +4,7 @@
 package de.labor23.powercounter.dm;
 
 import de.labor23.powercounter.dm.PowerMeter;
+import de.labor23.powercounter.dm.hardware.Bank;
 
 privileged aspect PowerMeter_Roo_JavaBean {
     
@@ -21,6 +22,14 @@ privileged aspect PowerMeter_Roo_JavaBean {
     
     public void PowerMeter.setAddress(Byte address) {
         this.address = address;
+    }
+    
+    public Bank PowerMeter.getBank() {
+        return this.bank;
+    }
+    
+    public void PowerMeter.setBank(Bank bank) {
+        this.bank = bank;
     }
     
     public Integer PowerMeter.getTicksPerKWH() {

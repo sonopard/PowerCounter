@@ -4,6 +4,7 @@
 package de.labor23.powercounter.web;
 
 import de.labor23.powercounter.dm.PowerMeter;
+import de.labor23.powercounter.dm.hardware.Bank;
 import de.labor23.powercounter.web.PowerMeterBean;
 import de.labor23.powercounter.web.util.MessageFactory;
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.component.html.HtmlOutputText;
 import javax.faces.component.html.HtmlPanelGrid;
 import javax.faces.context.FacesContext;
+import org.primefaces.component.autocomplete.AutoComplete;
 import org.primefaces.component.inputtext.InputText;
 import org.primefaces.component.message.Message;
 import org.primefaces.component.outputlabel.OutputLabel;
@@ -160,6 +162,26 @@ privileged aspect PowerMeterBean_Roo_ManagedBean {
         addressCreateInputMessage.setDisplay("icon");
         htmlPanelGrid.getChildren().add(addressCreateInputMessage);
         
+        OutputLabel bankCreateOutput = (OutputLabel) application.createComponent(OutputLabel.COMPONENT_TYPE);
+        bankCreateOutput.setFor("bankCreateInput");
+        bankCreateOutput.setId("bankCreateOutput");
+        bankCreateOutput.setValue("Bank:");
+        htmlPanelGrid.getChildren().add(bankCreateOutput);
+        
+        AutoComplete bankCreateInput = (AutoComplete) application.createComponent(AutoComplete.COMPONENT_TYPE);
+        bankCreateInput.setId("bankCreateInput");
+        bankCreateInput.setValueExpression("value", expressionFactory.createValueExpression(elContext, "#{powerMeterBean.powerMeter.bank}", Bank.class));
+        bankCreateInput.setCompleteMethod(expressionFactory.createMethodExpression(elContext, "#{powerMeterBean.completeBank}", List.class, new Class[] { String.class }));
+        bankCreateInput.setDropdown(true);
+        bankCreateInput.setRequired(true);
+        htmlPanelGrid.getChildren().add(bankCreateInput);
+        
+        Message bankCreateInputMessage = (Message) application.createComponent(Message.COMPONENT_TYPE);
+        bankCreateInputMessage.setId("bankCreateInputMessage");
+        bankCreateInputMessage.setFor("bankCreateInput");
+        bankCreateInputMessage.setDisplay("icon");
+        htmlPanelGrid.getChildren().add(bankCreateInputMessage);
+        
         OutputLabel ticksPerKWHCreateOutput = (OutputLabel) application.createComponent(OutputLabel.COMPONENT_TYPE);
         ticksPerKWHCreateOutput.setFor("ticksPerKWHCreateInput");
         ticksPerKWHCreateOutput.setId("ticksPerKWHCreateOutput");
@@ -226,6 +248,26 @@ privileged aspect PowerMeterBean_Roo_ManagedBean {
         addressEditInputMessage.setDisplay("icon");
         htmlPanelGrid.getChildren().add(addressEditInputMessage);
         
+        OutputLabel bankEditOutput = (OutputLabel) application.createComponent(OutputLabel.COMPONENT_TYPE);
+        bankEditOutput.setFor("bankEditInput");
+        bankEditOutput.setId("bankEditOutput");
+        bankEditOutput.setValue("Bank:");
+        htmlPanelGrid.getChildren().add(bankEditOutput);
+        
+        AutoComplete bankEditInput = (AutoComplete) application.createComponent(AutoComplete.COMPONENT_TYPE);
+        bankEditInput.setId("bankEditInput");
+        bankEditInput.setValueExpression("value", expressionFactory.createValueExpression(elContext, "#{powerMeterBean.powerMeter.bank}", Bank.class));
+        bankEditInput.setCompleteMethod(expressionFactory.createMethodExpression(elContext, "#{powerMeterBean.completeBank}", List.class, new Class[] { String.class }));
+        bankEditInput.setDropdown(true);
+        bankEditInput.setRequired(true);
+        htmlPanelGrid.getChildren().add(bankEditInput);
+        
+        Message bankEditInputMessage = (Message) application.createComponent(Message.COMPONENT_TYPE);
+        bankEditInputMessage.setId("bankEditInputMessage");
+        bankEditInputMessage.setFor("bankEditInput");
+        bankEditInputMessage.setDisplay("icon");
+        htmlPanelGrid.getChildren().add(bankEditInputMessage);
+        
         OutputLabel ticksPerKWHEditOutput = (OutputLabel) application.createComponent(OutputLabel.COMPONENT_TYPE);
         ticksPerKWHEditOutput.setFor("ticksPerKWHEditInput");
         ticksPerKWHEditOutput.setId("ticksPerKWHEditOutput");
@@ -275,6 +317,15 @@ privileged aspect PowerMeterBean_Roo_ManagedBean {
         addressValue.setValueExpression("value", expressionFactory.createValueExpression(elContext, "#{powerMeterBean.powerMeter.address}", String.class));
         htmlPanelGrid.getChildren().add(addressValue);
         
+        HtmlOutputText bankLabel = (HtmlOutputText) application.createComponent(HtmlOutputText.COMPONENT_TYPE);
+        bankLabel.setId("bankLabel");
+        bankLabel.setValue("Bank:");
+        htmlPanelGrid.getChildren().add(bankLabel);
+        
+        HtmlOutputText bankValue = (HtmlOutputText) application.createComponent(HtmlOutputText.COMPONENT_TYPE);
+        bankValue.setValueExpression("value", expressionFactory.createValueExpression(elContext, "#{powerMeterBean.powerMeter.bank}", String.class));
+        htmlPanelGrid.getChildren().add(bankValue);
+        
         HtmlOutputText ticksPerKWHLabel = (HtmlOutputText) application.createComponent(HtmlOutputText.COMPONENT_TYPE);
         ticksPerKWHLabel.setId("ticksPerKWHLabel");
         ticksPerKWHLabel.setValue("Ticks Per K W H:");
@@ -296,6 +347,16 @@ privileged aspect PowerMeterBean_Roo_ManagedBean {
     
     public void PowerMeterBean.setPowerMeter(PowerMeter powerMeter) {
         this.powerMeter = powerMeter;
+    }
+    
+    public List<Bank> PowerMeterBean.completeBank(String query) {
+        List<Bank> suggestions = new ArrayList<Bank>();
+        for (Bank bank : Bank.values()) {
+            if (bank.name().toLowerCase().startsWith(query.toLowerCase())) {
+                suggestions.add(bank);
+            }
+        }
+        return suggestions;
     }
     
     public String PowerMeterBean.onEdit() {
