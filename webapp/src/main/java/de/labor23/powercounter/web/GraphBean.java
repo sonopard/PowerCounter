@@ -25,9 +25,9 @@ public class GraphBean {
 	List<PowerMeter> powerMeters;
 	
 	/**
-	 * Supposed time delta in seconds. Default=600 = 10 mins
+	 * Supposed time delta in miliseconds. Default=6000000 = 10 mins
 	 */
-	Integer timeDelta = 600;
+	Integer timeDelta = 600000;
 	
 	/**
 	 * Number of datapoints to display - currently fixed!
@@ -54,8 +54,8 @@ public class GraphBean {
             for(int i = 0; i<datapoints; i++) {
             	//get zeitraum in milis min/max
             	//search ticks between and powerMeter
-            	from = new Date(now.getTime()-(timeDelta*(datapoints-i)));
-            	to = new Date(now.getTime()-(timeDelta*(datapoints-i+1)));
+            	from = new Date(now.getTime()-(timeDelta*(datapoints-i+1)));
+            	to = new Date(now.getTime()-(timeDelta*(datapoints-i)));
             	countTicks = Tick.countTicksByOccurenceBetweenAndMeter(from, to, p);
             	
             	lcs.set(i, countTicks);

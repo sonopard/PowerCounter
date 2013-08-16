@@ -1,5 +1,6 @@
 package de.labor23.powercounter;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import javax.annotation.PostConstruct;
@@ -40,13 +41,13 @@ public class ImportBean {
         Date now = new Date();
         Date tickdate;
 
-    	Integer timeDelta = 6;
-    	Integer datapoints = 3600;
+    	Integer timeDelta = 6000;
+    	Integer datapoints = 6000;
     	
         for(int i = 0; i<datapoints; i++) {
         	
         	t = new Tick();
-        	tickdate = new Date(now.getTime()-(timeDelta*(datapoints-i)));
+        	tickdate = new Date(now.getTime()-(i*i));
         	t.setOccurence(tickdate);
         	t.setMeter(p);
         	t.persist();

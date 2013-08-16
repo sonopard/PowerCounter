@@ -14,7 +14,9 @@
       </f:facet>
 <p:lineChart id="linear" value="#{graphBean.linearModel}" legendPosition="e"  
      title="Linear Chart" style="height:300px"/>  
-  
+            <p:commandButton id="viewButton" icon="ui-icon-zoomin" update=":viewForm:viewPanelGrid" oncomplete="viewDialogWidget.show()" title="#{messages.label_view}">
+              <f:setPropertyActionListener value="#{powerMeter}" target="#{powerMeterBean.powerMeter}" />
+            </p:commandButton>
     </p:panel>
   </ui:define>
 </ui:composition>
