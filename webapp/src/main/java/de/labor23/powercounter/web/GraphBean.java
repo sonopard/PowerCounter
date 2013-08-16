@@ -8,12 +8,14 @@ import javax.faces.bean.ViewScoped;
 
 import org.primefaces.model.chart.CartesianChartModel;
 import org.primefaces.model.chart.LineChartSeries;
+import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.serializable.RooSerializable;
 
 import de.labor23.powercounter.dm.PowerMeter;
 import de.labor23.powercounter.dm.Tick;
 
 @RooSerializable
+@RooJavaBean
 @ManagedBean
 @ViewScoped
 public class GraphBean {
@@ -37,6 +39,7 @@ public class GraphBean {
 	
 	@PostConstruct
     private void createLinearModel() {  
+		powerMeters = PowerMeter.findAllPowerMeters();
         linearModel = new CartesianChartModel();  
         
         LineChartSeries lcs = null;

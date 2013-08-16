@@ -4,7 +4,7 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui">
-<ui:composition template="../templates/layout.xhtml">
+<ui:composition template="../templates/blank.xhtml">
   <ui:define name="content">
     <p:panel id="mainPanel" toggleable="true" toggleSpeed="250">
       <f:facet name="header">
@@ -12,7 +12,7 @@
           <f:param value="#{applicationBean.appName}" />
         </h:outputFormat>
       </f:facet>
-<p:lineChart id="linear" value="#{chartBean.linearModel}" legendPosition="e"  
+<p:lineChart id="linear" value="#{graphBean.linearModel}" legendPosition="e"  
      title="Linear Chart" minY="0" maxY="10" style="height:300px"/>  
   
     </p:panel>
