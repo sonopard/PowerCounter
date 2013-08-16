@@ -19,7 +19,6 @@ import de.labor23.powercounter.dm.json.TickDTO;
 @RooJavaBean
 @RooToString
 @RooJpaActiveRecord
-@RooJson(rootName = "api")
 public class Tick {
 
     /**
