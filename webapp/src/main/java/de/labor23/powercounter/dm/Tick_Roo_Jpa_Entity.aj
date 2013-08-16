@@ -24,6 +24,10 @@ privileged aspect Tick_Roo_Jpa_Entity {
     @Column(name = "version")
     private Integer Tick.version;
     
+    public Tick.new() {
+        super();
+    }
+
     public Long Tick.getId() {
         return this.id;
     }
