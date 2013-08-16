@@ -25,7 +25,6 @@ import javax.validation.constraints.Min;
 @RooJavaBean
 @RooToString
 @RooJson
-
 public class TickDTO {
 
     @Temporal(TemporalType.TIMESTAMP)

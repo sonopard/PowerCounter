@@ -34,8 +34,7 @@ public class Tick {
     
     public Tick(TickDTO dto) {
     	this.occurence = dto.getOccurence();
-    	PowerMeter p =  PowerMeter.findPowerMetersByAddressAndBank(dto.getAddress(), Bank.values()[dto.getBank()])
-    			.getSingleResult();
+    	PowerMeter p =  PowerMeter.findPowerMetersByAddressAndBank(dto.getAddress(), Bank.values()[dto.getBank()]);
     	this.meter = p;
     }
 }

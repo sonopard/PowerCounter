@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import de.labor23.powercounter.dm.Tick;
 import de.labor23.powercounter.dm.json.TickDTO;
@@ -18,12 +19,28 @@ public class TickController {
 	
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> createFromJson(@RequestBody String json) {
-        TickDTO tickDTO = TickDTO.fromJsonToTickDTO(json);
+    	String str = new String("{address:35,bank:0,occurence:1376673039966}");
+        TickDTO tickDTO = TickDTO.fromJsonToTickDTO(str);
+        System.out.println(tickDTO);
         Tick t = new Tick(tickDTO);
         t.persist();
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+    }
+    
+    @RequestMapping(headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> exampleJson() {
+        TickDTO tickDTO = new TickDTO();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        if (tickDTO == null) {
+            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        }
+        tickDTO.setAddress((byte) 0x23);
+        tickDTO.setBank(0);
+        return new ResponseEntity<String>(tickDTO.toJson(), headers, HttpStatus.OK);
     }
     
 	/* Savings from roo

@@ -41,18 +41,18 @@ public class PowerMeter {
     private Integer ticksPerKWH;
     
     
-    public static TypedQuery<PowerMeter> findPowerMetersByAddressAndBank(Byte address, Bank bank) {
+    public static PowerMeter findPowerMetersByAddressAndBank(Byte address, Bank bank) {
         if (address == null) throw new IllegalArgumentException("The address argument is required");
         if (bank == null) throw new IllegalArgumentException("The bank argument is required");
         EntityManager em = PowerMeter.entityManager();
         TypedQuery<PowerMeter> q = em.createQuery(""
         		+ "SELECT o FROM PowerMeter AS o "
         		+ "WHERE "
-        			+ "o.address = :address"
-        		+ "AND"
-        			+ "o.bank = :bank", PowerMeter.class);
+        			+ "o.address = :address "
+        		+ "AND "
+        			+ "o.bank = :bank ", PowerMeter.class);
         q.setParameter("address", address);
-        q.setParameter("address", bank);
-        return q;
+        q.setParameter("bank", bank);
+        return q.getSingleResult();
     }
 }
