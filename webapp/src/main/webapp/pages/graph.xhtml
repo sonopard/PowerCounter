@@ -1,21 +1,28 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:p="http://primefaces.org/ui">
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
 <ui:composition template="../templates/blank.xhtml">
-  <ui:define name="content">
-    <p:panel id="mainPanel" toggleable="true" toggleSpeed="250">
-      <f:facet name="header">
-        <h:outputFormat value="#{messages.label_welcome_titlepane}">
-          <f:param value="#{applicationBean.appName}" />
-        </h:outputFormat>
-      </f:facet>
-<p:lineChart id="linear" value="#{graphBean.linearModel}" legendPosition="e"  
-     title="Linear Chart" style="height:300px"/>  
-  
-    </p:panel>
-  </ui:define>
+	<ui:define name="content">
+		<p:panel id="mainPanel" toggleable="true" toggleSpeed="250">
+			<f:facet name="header">
+				<h:outputFormat value="#{messages.label_welcome_titlepane}">
+					<f:param value="#{applicationBean.appName}" />
+				</h:outputFormat>
+			</f:facet>
+			<p:lineChart id="linear" value="#{graphBean.linearModel}"
+				legendPosition="e" title="Linear Chart" style="height:300px" />
+			<h:form id="form">
+
+				<p:poll interval="1" update="load" />
+
+				<p:meterGaugeChart id="load" value="#{liveBean.load}"
+					style="width:400px;height:250px" title="Current Labor load"
+					label="kW" />
+			</h:form>
+		</p:panel>
+	</ui:define>
 </ui:composition>
 </html>

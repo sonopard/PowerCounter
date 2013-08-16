@@ -5,6 +5,7 @@ package de.labor23.powercounter.dm;
 
 import de.labor23.powercounter.dm.PowerMeter;
 import de.labor23.powercounter.dm.Tick;
+import java.util.Date;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
@@ -15,6 +16,16 @@ privileged aspect Tick_Roo_Finder {
         EntityManager em = Tick.entityManager();
         TypedQuery<Tick> q = em.createQuery("SELECT o FROM Tick AS o WHERE o.meter = :meter", Tick.class);
         q.setParameter("meter", meter);
+        return q;
+    }
+    
+    public static TypedQuery<Tick> Tick.findTicksByOccurenceBetween(Date minOccurence, Date maxOccurence) {
+        if (minOccurence == null) throw new IllegalArgumentException("The minOccurence argument is required");
+        if (maxOccurence == null) throw new IllegalArgumentException("The maxOccurence argument is required");
+        EntityManager em = Tick.entityManager();
+        TypedQuery<Tick> q = em.createQuery("SELECT o FROM Tick AS o WHERE o.occurence BETWEEN :minOccurence AND :maxOccurence", Tick.class);
+        q.setParameter("minOccurence", minOccurence);
+        q.setParameter("maxOccurence", maxOccurence);
         return q;
     }
     

@@ -1,22 +1,26 @@
 package de.labor23.powercounter.dm;
 import java.util.Date;
+
 import javax.persistence.EntityManager;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
+
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.tostring.RooToString;
+
 import de.labor23.powercounter.dm.hardware.Bank;
 import de.labor23.powercounter.dm.json.TickDTO;
+
 import java.util.Calendar;
 
 @RooJavaBean
 @RooToString
-@RooJpaActiveRecord(finders = { "findTicksByMeter" })
+@RooJpaActiveRecord(finders = { "findTicksByMeter", "findTicksByOccurenceBetween" })
 public class Tick {
 
     /**
@@ -48,5 +52,16 @@ public class Tick {
         q.setParameter("maxOccurence", maxOccurence);
         return q.getSingleResult();
     }
-
+    
+    
+    
+    public static long countTicksByOccurenceBetween(Date minOccurence, Date maxOccurence) {
+        if (minOccurence == null) throw new IllegalArgumentException("The minOccurence argument is required");
+        if (maxOccurence == null) throw new IllegalArgumentException("The maxOccurence argument is required");
+        EntityManager em = Tick.entityManager();
+        TypedQuery<Long> q = em.createQuery("SELECT COUNT(o) FROM Tick AS o WHERE o.occurence BETWEEN :minOccurence AND :maxOccurence", Long.class);
+        q.setParameter("minOccurence", minOccurence);
+        q.setParameter("maxOccurence", maxOccurence);
+        return q.getSingleResult();
+    }
 }
