@@ -45,13 +45,17 @@ public class Tick {
         if (minOccurence == null) throw new IllegalArgumentException("The minOccurence argument is required");
         if (maxOccurence == null) throw new IllegalArgumentException("The maxOccurence argument is required");
 
-        return entityManager().createQuery(""
-        		+ "SELECT COUNT(o) FROM Tick o"
+        TypedQuery<Long> q = entityManager().createQuery(""
+        		+ "SELECT COUNT(o) FROM Tick o "
         			+ "WHERE "
-        				+ "o.meter = :meter"
-        			+ "AND"
-        				+ "(o.occurence BETWEEN :minOccurence AND :maxOccurence)", Long.class)
-        		.getSingleResult();
+        				+ "o.meter = :meter "
+        			+ "AND "
+        				+ "(o.occurence BETWEEN :minOccurence AND :maxOccurence)", Long.class);
+        q.setParameter("meter", meter);
+        q.setParameter("minOccurence", minOccurence);
+        q.setParameter("maxOccurence", maxOccurence);
+        
+        return q.getSingleResult();
         			
     }
 }
