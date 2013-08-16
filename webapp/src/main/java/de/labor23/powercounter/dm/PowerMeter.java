@@ -16,7 +16,7 @@ import de.labor23.powercounter.dm.hardware.Bank;
 @RooJavaBean
 @RooToString
 @RooJpaActiveRecord(entityName = "PowerMeter", finders = { "findPowerMetersByGpioIdEquals", "findPowerMetersByAddress" })
-@Table(uniqueConstraints=@UniqueConstraint(columnNames = { "address, bank" }))
+@Table(uniqueConstraints=@UniqueConstraint(columnNames = { "ADDRESS", "BANK" }))
 public class PowerMeter {
 
     /**
