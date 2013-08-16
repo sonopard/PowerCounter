@@ -25,10 +25,12 @@ public class LiveBean {
     private void createMeterGaugeModel() {  
     	  
         intervals = new ArrayList<Number>(){{  
-            add(10);  
-            add(20);  
-            add(30);  
-            add(40);  
+            add(1000);  
+            add(2000);  
+            add(3000);  
+            add(4000);  
+            add(5000);  
+            add(6000);  
         }};  
   
     }  
@@ -37,14 +39,14 @@ public class LiveBean {
         Calendar from,to;
         Long countTicks;
 		from = Calendar.getInstance();
-		from.add(Calendar.MINUTE, -1);
+		from.add(Calendar.SECOND, -10);
 		to = Calendar.getInstance();
 		
 		countTicks = Tick.countTicksByOccurenceBetween(from.getTime(), to.getTime());
 		
-		Long kwh = (countTicks*60/2000);
+		Long watt = (countTicks*600/20);
 		
-        return  new MeterGaugeChartModel(kwh, intervals);  
+        return  new MeterGaugeChartModel(watt, intervals);  
 	}
 	
 }

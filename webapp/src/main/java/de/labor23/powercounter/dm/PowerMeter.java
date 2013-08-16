@@ -1,6 +1,7 @@
 package de.labor23.powercounter.dm;
 import javax.persistence.EntityManager;
 import javax.persistence.Enumerated;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.TypedQuery;
 import javax.persistence.UniqueConstraint;
@@ -40,6 +41,9 @@ public class PowerMeter {
     @Value("2000")
     private Integer ticksPerKWH;
     
+    @NotNull
+    @ManyToOne
+    private User user;
     
     public static PowerMeter findPowerMetersByAddressAndBank(Byte address, Bank bank) {
         if (address == null) throw new IllegalArgumentException("The address argument is required");

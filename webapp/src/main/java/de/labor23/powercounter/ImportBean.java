@@ -47,7 +47,7 @@ public class ImportBean {
         for(int i = 0; i<datapoints; i++) {
         	
         	t = new Tick();
-        	tickdate = new Date(now.getTime()-((i*i)-60000));
+        	tickdate = new Date(now.getTime()-((i*i)-30000));
         	t.setOccurence(tickdate);
         	t.setMeter(p);
         	t.persist();

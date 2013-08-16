@@ -16,6 +16,6 @@ public class User extends UserDetailsSO {
 
     /**
      */
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private List<PowerMeter> powerMeters = new ArrayList<PowerMeter>();
 }

@@ -1,23 +1,126 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:p="http://primefaces.org/ui">
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
 <ui:composition template="../templates/blank.xhtml">
-  <ui:define name="content">
-    <p:panel id="mainPanel" toggleable="true" toggleSpeed="250">
-      <f:facet name="header">
-        <h:outputFormat value="#{messages.label_welcome_titlepane}">
-          <f:param value="#{applicationBean.appName}" />
-        </h:outputFormat>
-      </f:facet>
-<p:lineChart id="linear" value="#{graphBean.linearModel}" legendPosition="e"  
-     title="Linear Chart" style="height:300px"/>  
+	<ui:define name="content">
+		<p:panel id="mainPanel" toggleable="true" toggleSpeed="250">
+			<f:facet name="header">
+				<h:outputFormat value="#{messages.label_welcome_titlepane}">
+					<f:param value="#{applicationBean.appName}" />
+				</h:outputFormat>
+			</f:facet>
+
+			<!-- 
             <p:commandButton id="viewButton" icon="ui-icon-zoomin" update=":viewForm:viewPanelGrid" oncomplete="viewDialogWidget.show()" title="#{messages.label_view}">
               <f:setPropertyActionListener value="#{powerMeter}" target="#{powerMeterBean.powerMeter}" />
             </p:commandButton>
-    </p:panel>
-  </ui:define>
+            -->
+
+
+			<h:form id="carForm">
+
+				<p:fieldset legend="AvailableCars">
+
+					<p:dataGrid id="availableCars" var="car"
+						value="#{tableBean.carsSmall}" columns="3">
+
+						<p:column>
+
+							<p:panel id="pnl" header="#{car.model}" style="text-align:center">
+								<h:panelGrid columns="1" style="width:100%">
+									<p:graphicImage value="/images/cars/#{car.manufacturer}.jpg" />
+								</h:panelGrid>
+							</p:panel>
+
+							<p:draggable for="pnl" revert="true" handle=".ui-panel-titlebar"
+								stack=".ui-panel" />
+
+						</p:column>
+
+					</p:dataGrid>
+
+				</p:fieldset>
+
+				<p:fieldset id="selectedCars" legend="Selected Cars"
+					style="margin-top:20px">
+
+					<p:outputPanel id="dropArea">
+
+						<h:outputText value="!!!Drop here!!!"
+							rendered="#{empty tableBean.droppedCars}" style="font-size:24px;" />
+
+						<p:dataTable var="car" value="#{tableBean.droppedCars}"
+							rendered="#{not empty tableBean.droppedCars}">
+
+							<p:column headerText="Model">
+								<h:outputText value="#{car.model}" />
+							</p:column>
+
+							<p:column headerText="Year">
+								<h:outputText value="#{car.year}" />
+							</p:column>
+
+							<p:column headerText="Manufacturer">
+								<h:outputText value="#{car.manufacturer}" />
+							</p:column>
+
+							<p:column headerText="Color">
+								<h:outputText value="#{car.color}" />
+							</p:column>
+
+							<p:column style="width:32px">
+								<p:commandButton update=":carForm:display"
+									oncomplete="PF('carDialog').show()" icon="ui-icon-search">
+									<f:setPropertyActionListener value="#{car}"
+										target="#{tableBean.selectedCar}" />
+								</p:commandButton>
+							</p:column>
+						</p:dataTable>
+
+					</p:outputPanel>
+
+				</p:fieldset>
+
+				<p:droppable for="selectedCars" tolerance="touch"
+					activeStyleClass="ui-state-highlight" datasource="availableCars"
+					onDrop="handleDrop">
+					<p:ajax listener="#{tableBean.onCarDrop}"
+						update="dropArea availableCars" />
+				</p:droppable>
+
+				<p:dialog header="Car Detail" widgetVar="carDialog"
+					resizable="false" draggable="false" width="200" showEffect="fade"
+					hideEffect="fade" modal="true">
+
+					<h:panelGrid id="display" columns="2" cellpadding="4">
+
+						<f:facet name="header">
+							<p:graphicImage
+								value="/images/cars/#{tableBean.selectedCar.manufacturer}.jpg" />
+						</f:facet>
+
+						<h:outputText value="Model:" />
+						<h:outputText value="#{tableBean.selectedCar.model}" />
+
+						<h:outputText value="Year:" />
+						<h:outputText value="#{tableBean.selectedCar.year}" />
+
+						<h:outputText value="Manufacturer:" />
+						<h:outputText value="#{tableBean.selectedCar.manufacturer}" />
+
+						<h:outputText value="Color:" />
+						<h:outputText value="#{tableBean.selectedCar.color}" />
+					</h:panelGrid>
+				</p:dialog>
+
+
+			</h:form>
+
+
+		</p:panel>
+	</ui:define>
 </ui:composition>
 </html>
