@@ -19,8 +19,8 @@ public class TickController {
 	
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> createFromJson(@RequestBody String json) {
-    	String str = new String("{address:35,bank:0,occurence:1376673039966}");
-        TickDTO tickDTO = TickDTO.fromJsonToTickDTO(str);
+    	//Example String : String str = new String("{address:35,bank:0}");
+        TickDTO tickDTO = TickDTO.fromJsonToTickDTO(json);
         System.out.println(tickDTO);
         Tick t = new Tick(tickDTO);
         t.persist();
