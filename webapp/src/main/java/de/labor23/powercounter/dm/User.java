@@ -14,6 +14,7 @@ import javax.persistence.ManyToMany;
 
 @RooJavaBean
 @RooToString
+@RooJpaActiveRecord
 public class User extends UserDetailsSO {
 
     /**
