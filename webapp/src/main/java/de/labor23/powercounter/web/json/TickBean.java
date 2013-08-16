@@ -26,7 +26,7 @@ public class TickBean {
 	public void getJson() {
 		
 	}
-	
+	/*
     @PostConstruct
     public void kurlariYukle() {
  
@@ -98,4 +98,5 @@ public class TickBean {
         }
         return sb.toString();
     }
+    */
 }
