@@ -13,7 +13,7 @@ import de.labor23.powercounter.dm.json.TickDTO;
 
 @RooWebJson(jsonObject = TickDTO.class)
 @Controller
-@RequestMapping("/ticks")
+@RequestMapping("/tick")
 public class TickController {
 	
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
