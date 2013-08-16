@@ -1,22 +1,22 @@
 package de.labor23.powercounter.dm;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
-import org.springframework.roo.addon.tostring.RooToString;
-
-import javax.persistence.Column;
 import javax.persistence.EntityManager;
 import javax.persistence.Enumerated;
+import javax.persistence.Table;
 import javax.persistence.TypedQuery;
-import javax.validation.constraints.Min;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.roo.addon.javabean.RooJavaBean;
+import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
+import org.springframework.roo.addon.tostring.RooToString;
 
 import de.labor23.powercounter.dm.hardware.Bank;
 
 @RooJavaBean
 @RooToString
 @RooJpaActiveRecord(entityName = "PowerMeter", finders = { "findPowerMetersByGpioIdEquals", "findPowerMetersByAddress" })
+@Table(uniqueConstraints=@UniqueConstraint(columnNames = { "address, bank" }))
 public class PowerMeter {
 
     /**
