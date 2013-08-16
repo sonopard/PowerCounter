@@ -7,7 +7,7 @@ import de.labor23.powercounter.dm.User;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-privileged aspect User_Roo_ToString {
+privileged aspect User_ToString {
     
     public String User.toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);

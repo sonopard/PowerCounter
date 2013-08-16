@@ -7,7 +7,7 @@ import de.labor23.powercounter.dm.PowerMeter;
 import de.labor23.powercounter.dm.User;
 import java.util.List;
 
-privileged aspect User_Roo_JavaBean {
+privileged aspect User_JavaBean {
     
     public List<PowerMeter> User.getPowerMeters() {
         return this.powerMeters;
