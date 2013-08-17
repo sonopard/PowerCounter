@@ -31,7 +31,7 @@ public class UserBean {
 
 
     @ManagedProperty(value = "#{powerMeterBean.unusedPowerMeters}")
-	private List<PowerMeter> unusedPowerMeters;    
+	public List<PowerMeter> unusedPowerMeters;    
     
     public List<PowerMeter> getUserPowerMeters() {
     	return PowerMeter.findPowerMetersByUser(user).getResultList();

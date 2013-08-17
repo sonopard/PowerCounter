@@ -21,7 +21,8 @@
 				</p:column>
 
 				<p:column style="width:32px">
-					<p:commandButton update=":powerMetersForm:dropArea" icon="ui-icon-search">
+					<p:commandButton update=":powerMetersForm:dropArea"
+						icon="ui-icon-search">
 						<f:setPropertyActionListener value="#{user}"
 							target="#{userBean.user}" />
 					</p:commandButton>
@@ -55,19 +56,19 @@
 
 							<p:column style="width:32px">
 								<p:commandButton update=":powerMetersForm:display"
-									oncomplete="PF('powerMeterDialog').show()"
-									icon="ui-icon-search">
+									oncomplete="powerMeterDialog.show()" icon="ui-icon-search">
 									<f:setPropertyActionListener value="#{powerMeter}"
 										target="#{powerMeterBean.powerMeter}" />
 								</p:commandButton>
-								
-								<p:commandButton
-									action="#{powerMeterBean.free}" 
+
+								<p:commandButton action="#{powerMeterBean.free}"
 									update=":powerMetersForm:unusedPowerMeters :powerMetersForm:dropArea"
 									icon="ui-icon-trash">
 									<f:setPropertyActionListener value="#{powerMeter}"
 										target="#{powerMeterBean.powerMeter}" />
 								</p:commandButton>
+
+
 							</p:column>
 						</p:dataTable>
 
@@ -76,6 +77,10 @@
 				</p:fieldset>
 
 				<p:fieldset legend="Unused Powermeters">
+
+					<p:commandButton update=":powerMetersForm:display"
+						oncomplete="createDialogWidget.show()" icon="ui-icon-document"
+						action="#{powerMeterBean.create}" />
 
 					<p:dataGrid id="unusedPowerMeters" var="powerMeter"
 						value="#{userBean.unusedPowerMeters}" columns="3">
@@ -101,7 +106,7 @@
 
 				<p:droppable for="userMeters" tolerance="touch"
 					activeStyleClass="ui-state-highlight"
-					datasource="unusedPowerMeters" >
+					datasource="unusedPowerMeters">
 					<p:ajax listener="#{userBean.onPowerMeterDropIn}"
 						update="dropArea unusedPowerMeters" />
 				</p:droppable>
@@ -122,6 +127,40 @@
 
 
 			</h:form>
+
+			<p:dialog id="createDialog"
+				header="#{messages.label_create} PowerMeter" modal="true"
+				widgetVar="createDialogWidget" dynamic="true" resizable="true"
+				maximizable="true" showEffect="fade" hideEffect="explode">
+				<p:ajax event="close" update=":powerMetersForm:unusedPowerMeters" />
+				<p:outputPanel id="createPanel">
+					<h:form id="createForm" enctype="multipart/form-data">
+						<h:panelGrid id="createPanelGrid" columns="2" styleClass="dialog"
+							columnClasses="col1,col2">
+							<h:outputText value="MeterName" />
+							<p:inputText value="#{powerMeterBean.powerMeter.meterName}" />
+
+							<h:outputText value="Address" />
+							<p:inputText value="#{powerMeterBean.powerMeter.address}" />
+
+							<h:outputText value="Bank" />
+							<p:selectOneButton value="#{powerMeterBean.powerMeter.bank}">
+								<f:selectItem itemLabel="Lower Bank" itemValue="LOWER_BANK" />
+								<f:selectItem itemLabel="Upper Bank" itemValue="UPPER_BANK" />
+							</p:selectOneButton>
+
+							<p:commandButton id="createSaveButton"
+								value="#{messages.label_save}"
+								action="#{powerMeterBean.persist}"
+								oncomplete="createDialogWidget.hide()"
+								update=":powerMetersForm:unusedPowerMeters :powerMetersForm:dropArea" />
+							<p:commandButton id="createCloseButton"
+								value="#{messages.label_close}"
+								onclick="createDialogWidget.hide()" type="button" />
+						</h:panelGrid>
+					</h:form>
+				</p:outputPanel>
+			</p:dialog>
 
 
 		</p:panel>

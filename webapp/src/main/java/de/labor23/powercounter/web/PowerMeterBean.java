@@ -22,6 +22,8 @@ public class PowerMeterBean {
 	private List<PowerMeter> allPowerMeters;
 	private List<PowerMeter> unusedPowerMeters;
 	
+	
+	
 	@PostConstruct
 	private void setUp() {
 		allPowerMeters = PowerMeter.findAllPowerMeters();
@@ -40,4 +42,18 @@ public class PowerMeterBean {
 		unusedPowerMeters.add(p);
 	}
 	
+	
+	/**
+	 * Creation of PowerMeter
+	 */
+
+	public void create() {
+		powerMeter = new PowerMeter();
+	}
+	public void persist() {
+		powerMeter.persist();
+		unusedPowerMeters.add(powerMeter);
+		allPowerMeters.add(powerMeter);
+		//setUp();
+	}
 }
