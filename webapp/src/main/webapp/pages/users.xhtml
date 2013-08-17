@@ -13,21 +13,58 @@
 				</h:outputFormat>
 			</f:facet>
 
+			<p:fieldset id="users" legend="Users" style="margin-top:20px">
 
-			<p:dataTable var="user" value="#{userBean.allUsers}">
+				<p:commandButton update=":users"
+					oncomplete="createUserDialogWidget.show()" icon="ui-icon-document"
+					action="#{userBean.create}" />
 
-				<p:column headerText="Username">
-					<h:outputText value="#{user.username}" />
-				</p:column>
+				<p:dataTable var="user" value="#{userBean.allUsers}" >
 
-				<p:column style="width:32px">
-					<p:commandButton update=":powerMetersForm:dropArea"
-						icon="ui-icon-search">
-						<f:setPropertyActionListener value="#{user}"
-							target="#{userBean.user}" />
-					</p:commandButton>
-				</p:column>
-			</p:dataTable>
+					<p:column headerText="Username">
+						<h:outputText value="#{user.username}" />
+					</p:column>
+
+					<p:column style="width:32px">
+						<p:commandButton update=":powerMetersForm:dropArea"
+							icon="ui-icon-search">
+							<f:setPropertyActionListener value="#{user}"
+								target="#{userBean.user}" />
+						</p:commandButton>
+					</p:column>
+				</p:dataTable>
+			</p:fieldset>
+			
+			<p:dialog id="createUserDialog"
+				header="#{messages.label_create} User" modal="true"
+				widgetVar="createUserDialogWidget" dynamic="true" resizable="true"
+				maximizable="true" showEffect="fade" hideEffect="explode">
+				<p:ajax event="close" update=":users" />
+				<p:outputPanel id="createUserPanel">
+					<h:form id="createUserForm" enctype="multipart/form-data">
+						<h:panelGrid id="createUserPanelGrid" columns="2" styleClass="dialog"
+							columnClasses="col1,col2">
+							<h:outputText value="Username" />
+							<p:inputText value="#{userBean.user.username}" />
+
+							<h:outputText value="Password" />
+							<p:password value="#{userBean.user.password}" feedback="true"/>
+							 
+							<h:outputText value="Bank" />
+        					<p:selectBooleanCheckbox value="#{userBean.user.enabled}" checked="true" />  
+
+							<p:commandButton id="createSaveButton"
+								value="#{messages.label_save}"
+								action="#{userBean.persist}"
+								oncomplete="createUserDialogWidget.hide()" />
+							<p:commandButton id="createCloseButton"
+								value="#{messages.label_close}"
+								onclick="createUserDialogWidget.hide()" type="button" />
+						</h:panelGrid>
+					</h:form>
+				</p:outputPanel>
+			</p:dialog>
+			
 
 
 			<h:form id="powerMetersForm">
@@ -45,6 +82,10 @@
 
 						<p:dataTable var="powerMeter" value="#{userBean.userPowerMeters}"
 							rendered="#{not empty userBean.userPowerMeters}">
+
+							<p:column headerText="Name">
+								<h:outputText value="#{powerMeter.meterName}" />
+							</p:column>
 
 							<p:column headerText="Address">
 								<h:outputText value="#{powerMeter.address}" />

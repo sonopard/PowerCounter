@@ -50,5 +50,17 @@ public class UserBean {
         meter.setUser(null);
         meter.merge();
     }
+    
+	/**
+	 * Creation of User
+	 */
+
+	public void create() {
+		user = new User();
+	}
+	public void persist() {
+		user.persist();
+		allUsers.add(user);
+	}
 	
 }
