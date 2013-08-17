@@ -26,7 +26,7 @@
 					</p:column>
 
 					<p:column style="width:32px">
-						<p:commandButton update=":powerMetersForm:dropArea"
+						<p:commandButton update=":powerMetersForm"
 							icon="ui-icon-search">
 							<f:setPropertyActionListener value="#{user}"
 								target="#{userBean.user}" />
@@ -39,7 +39,7 @@
 				header="#{messages.label_create} User" modal="true"
 				widgetVar="createUserDialogWidget" dynamic="true" resizable="true"
 				maximizable="true" showEffect="fade" hideEffect="explode">
-				<p:ajax event="close" update=":users" />
+				<p:ajax event="close" update=":users :powerMetersForm" />
 				<p:outputPanel id="createUserPanel">
 					<h:form id="createUserForm" enctype="multipart/form-data">
 						<h:panelGrid id="createUserPanelGrid" columns="2" styleClass="dialog"
@@ -67,16 +67,16 @@
 			
 
 
-			<h:form id="powerMetersForm">
+			<h:form id="powerMetersForm" >
 
 
 				<p:fieldset id="userMeters"
 					legend="PowerMeters selected for #{userBean.user.username}"
-					style="margin-top:20px">
+					style="margin-top:20px" rendered="#{not empty userBean.user}">
 
 					<p:outputPanel id="dropArea">
 
-						<h:outputText value="!!!Drop here!!!"
+						<h:outputText value="!!!Drop Power Meters here!!!"
 							rendered="#{empty userBean.userPowerMeters}"
 							style="font-size:24px;" />
 
@@ -93,6 +93,10 @@
 
 							<p:column headerText="Bank">
 								<h:outputText value="#{powerMeter.bank}" />
+							</p:column>
+							
+							<p:column headerText="Pin">
+								<h:outputText value="#{powerMeter.pin}" />
 							</p:column>
 
 							<p:column style="width:32px">
@@ -133,6 +137,7 @@
 								<h:panelGrid columns="1" style="width:100%">
 									<h:outputText value="#{powerMeter.address}" />
 									<h:outputText value="#{powerMeter.bank}" />
+									<h:outputText value="#{powerMeter.pin}" />
 								</h:panelGrid>
 							</p:panel>
 
@@ -189,6 +194,9 @@
 								<f:selectItem itemLabel="Lower Bank" itemValue="LOWER_BANK" />
 								<f:selectItem itemLabel="Upper Bank" itemValue="UPPER_BANK" />
 							</p:selectOneButton>
+							
+							<h:outputText value="Pin" />
+							<p:inputText value="#{powerMeterBean.powerMeter.pin}" />
 
 							<p:commandButton id="createSaveButton"
 								value="#{messages.label_save}"

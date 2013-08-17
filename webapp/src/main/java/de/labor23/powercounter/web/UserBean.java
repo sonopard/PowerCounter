@@ -26,7 +26,7 @@ public class UserBean {
 	private void setUp() {
 		allUsers = User.findAllUsers();
 		/* For testing purpose only */
-		user = (User) User.findAllUserDetailsSO().get(0);
+		//user = (User) User.findAllUserDetailsSO().get(0);
 	}
 
 

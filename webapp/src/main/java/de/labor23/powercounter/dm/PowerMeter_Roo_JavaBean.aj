@@ -33,6 +33,14 @@ privileged aspect PowerMeter_Roo_JavaBean {
         this.bank = bank;
     }
     
+    public Integer PowerMeter.getPin() {
+        return this.pin;
+    }
+    
+    public void PowerMeter.setPin(Integer pin) {
+        this.pin = pin;
+    }
+    
     public Integer PowerMeter.getTicksPerKWH() {
         return this.ticksPerKWH;
     }

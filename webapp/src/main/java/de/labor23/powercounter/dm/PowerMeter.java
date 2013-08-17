@@ -5,6 +5,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.TypedQuery;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -16,7 +18,7 @@ import de.labor23.powercounter.dm.hardware.Bank;
 
 @RooJavaBean
 @RooToString
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = { "ADDRESS", "BANK" }))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = { "ADDRESS", "BANK", "PIN" }))
 @RooJpaActiveRecord(entityName = "PowerMeter", finders = { "findPowerMetersByAddress", "findPowerMetersByUserIsNull", "findPowerMetersByUser" })
 public class PowerMeter {
 
@@ -34,7 +36,12 @@ public class PowerMeter {
     @NotNull
     @Enumerated
     private Bank bank;
-
+    
+    @NotNull
+    @Min(0L)
+    @Max(7L)
+    private Integer pin;
+    
     /**
      */
     @NotNull

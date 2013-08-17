@@ -29,6 +29,7 @@ public class ImportBean {
 		p.setAddress((byte) 23);
 		p.setBank(Bank.LOWER_BANK);
 		p.setMeterName("AV labordomäne");
+		p.setPin(7);
 		p.setUser(u);
 		p.persist();
 
@@ -57,6 +58,7 @@ public class ImportBean {
 			p = new PowerMeter();
 			p.setAddress((byte) (42+i));
 			p.setBank(Bank.UPPER_BANK);
+			p.setPin(7);
 			p.setMeterName("Some unused meter "+i);
 			p.persist();
 		}

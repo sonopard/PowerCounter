@@ -29,6 +29,7 @@ privileged aspect PowerMeterDataOnDemand_Roo_DataOnDemand {
         setAddress(obj, index);
         setBank(obj, index);
         setMeterName(obj, index);
+        setPin(obj, index);
         setTicksPerKWH(obj, index);
         setUser(obj, index);
         return obj;
@@ -47,6 +48,14 @@ privileged aspect PowerMeterDataOnDemand_Roo_DataOnDemand {
     public void PowerMeterDataOnDemand.setMeterName(PowerMeter obj, int index) {
         String meterName = "meterName_" + index;
         obj.setMeterName(meterName);
+    }
+    
+    public void PowerMeterDataOnDemand.setPin(PowerMeter obj, int index) {
+        Integer pin = new Integer(index);
+        if (pin < 0 || pin > 7) {
+            pin = 7;
+        }
+        obj.setPin(pin);
     }
     
     public void PowerMeterDataOnDemand.setTicksPerKWH(PowerMeter obj, int index) {
