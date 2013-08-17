@@ -16,8 +16,8 @@ import de.labor23.powercounter.dm.hardware.Bank;
 
 @RooJavaBean
 @RooToString
-@RooJpaActiveRecord(entityName = "PowerMeter", finders = { "findPowerMetersByGpioIdEquals", "findPowerMetersByAddress" })
-@Table(uniqueConstraints=@UniqueConstraint(columnNames = { "ADDRESS", "BANK" }))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = { "ADDRESS", "BANK" }))
+@RooJpaActiveRecord(entityName = "PowerMeter", finders = { "findPowerMetersByAddress", "findPowerMetersByUserIsNull", "findPowerMetersByUser" })
 public class PowerMeter {
 
     /**
@@ -28,7 +28,7 @@ public class PowerMeter {
      */
     @NotNull
     private Byte address;
-    
+
     /**
      */
     @NotNull
@@ -40,22 +40,15 @@ public class PowerMeter {
     @NotNull
     @Value("2000")
     private Integer ticksPerKWH;
-    
-    
-    @NotNull
+
     @ManyToOne
     private User user;
-    
+
     public static PowerMeter findPowerMetersByAddressAndBank(Byte address, Bank bank) {
         if (address == null) throw new IllegalArgumentException("The address argument is required");
         if (bank == null) throw new IllegalArgumentException("The bank argument is required");
         EntityManager em = PowerMeter.entityManager();
-        TypedQuery<PowerMeter> q = em.createQuery(""
-        		+ "SELECT o FROM PowerMeter AS o "
-        		+ "WHERE "
-        			+ "o.address = :address "
-        		+ "AND "
-        			+ "o.bank = :bank ", PowerMeter.class);
+        TypedQuery<PowerMeter> q = em.createQuery("" + "SELECT o FROM PowerMeter AS o " + "WHERE " + "o.address = :address " + "AND " + "o.bank = :bank ", PowerMeter.class);
         q.setParameter("address", address);
         q.setParameter("bank", bank);
         return q.getSingleResult();

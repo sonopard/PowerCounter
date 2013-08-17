@@ -20,4 +20,8 @@ public class User extends UserDetailsSO {
      */
     @ManyToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private List<PowerMeter> powerMeters = new ArrayList<PowerMeter>();
+    
+    public static List<User> findAllUsers() {
+        return entityManager().createQuery("SELECT o FROM User o", User.class).getResultList();
+    }
 }

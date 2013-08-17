@@ -4,6 +4,7 @@
 package de.labor23.powercounter.dm;
 
 import de.labor23.powercounter.dm.PowerMeter;
+import de.labor23.powercounter.dm.User;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
@@ -14,6 +15,20 @@ privileged aspect PowerMeter_Roo_Finder {
         EntityManager em = PowerMeter.entityManager();
         TypedQuery<PowerMeter> q = em.createQuery("SELECT o FROM PowerMeter AS o WHERE o.address = :address", PowerMeter.class);
         q.setParameter("address", address);
+        return q;
+    }
+    
+    public static TypedQuery<PowerMeter> PowerMeter.findPowerMetersByUser(User user) {
+        if (user == null) throw new IllegalArgumentException("The user argument is required");
+        EntityManager em = PowerMeter.entityManager();
+        TypedQuery<PowerMeter> q = em.createQuery("SELECT o FROM PowerMeter AS o WHERE o.user = :user", PowerMeter.class);
+        q.setParameter("user", user);
+        return q;
+    }
+    
+    public static TypedQuery<PowerMeter> PowerMeter.findPowerMetersByUserIsNull() {
+        EntityManager em = PowerMeter.entityManager();
+        TypedQuery<PowerMeter> q = em.createQuery("SELECT o FROM PowerMeter AS o WHERE o.user IS NULL", PowerMeter.class);
         return q;
     }
     

@@ -18,37 +18,57 @@ public class ImportBean {
 
 	@PostConstruct
 	public void setUp() throws Exception {
-		
+
 		User u = new User();
 		u.setUsername("user");
 		u.setPassword("user");
 		u.setEnabled(true);
 		u.persist();
-		
+
 		PowerMeter p = new PowerMeter();
 		p.setAddress((byte) 23);
 		p.setBank(Bank.LOWER_BANK);
 		p.setMeterName("AV labordomäne");
 		p.setUser(u);
 		p.persist();
-		
 
 		System.out.println(u.getPowerMeters());
 
 		Tick t;
-        Date now = new Date();
-        Date tickdate;
+		Date now = new Date();
+		Date tickdate;
 
-    	Integer timeDelta = 6000;
-    	Integer datapoints = 6000;
-    	
-        for(int i = 0; i<datapoints; i++) {
-        	
-        	t = new Tick();
-        	tickdate = new Date(now.getTime()-((i*i)-30000));
-        	t.setOccurence(tickdate);
-        	t.setMeter(p);
-        	t.persist();
-        }
+		Integer timeDelta = 6000;
+		Integer datapoints = 6000;
+
+		for (int i = 0; i < datapoints; i++) {
+
+			t = new Tick();
+			tickdate = new Date(now.getTime() - ((i * i) - 30000));
+			t.setOccurence(tickdate);
+			t.setMeter(p);
+			t.persist();
+		}
+
+		/**
+		 * Create a unused PowerMeter
+		 */
+		for (int i = 0; i < 5; i++) {
+			p = new PowerMeter();
+			p.setAddress((byte) (42+i));
+			p.setBank(Bank.UPPER_BANK);
+			p.setMeterName("Some unused meter "+i);
+			p.persist();
+		}
+		
+		/**
+		 * Create unused User
+		 */
+		
+		u = new User();
+		u.setUsername("unUUsed");
+		u.setPassword("unUUsed");
+		u.setEnabled(true);
+		u.persist();
 	}
 }

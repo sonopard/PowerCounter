@@ -20,10 +20,24 @@ public class PowerMeterBean {
 	private PowerMeter powerMeter;
 	
 	private List<PowerMeter> allPowerMeters;
+	private List<PowerMeter> unusedPowerMeters;
 	
 	@PostConstruct
 	private void setUp() {
 		allPowerMeters = PowerMeter.findAllPowerMeters();
+		unusedPowerMeters = PowerMeter.findPowerMetersByUserIsNull().getResultList();
+	}
+	
+	/**
+	 * Free a powerMeter from its user
+	 */
+	public void free() {
+		free(powerMeter);
+	}
+	public void free(PowerMeter p) {
+		p.setUser(null);
+		p = p.merge();
+		unusedPowerMeters.add(p);
 	}
 	
 }

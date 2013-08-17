@@ -25,4 +25,12 @@ privileged aspect PowerMeterBean_Roo_JavaBean {
         this.allPowerMeters = allPowerMeters;
     }
     
+    public List<PowerMeter> PowerMeterBean.getUnusedPowerMeters() {
+        return this.unusedPowerMeters;
+    }
+    
+    public void PowerMeterBean.setUnusedPowerMeters(List<PowerMeter> unusedPowerMeters) {
+        this.unusedPowerMeters = unusedPowerMeters;
+    }
+    
 }

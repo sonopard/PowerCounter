@@ -13,25 +13,80 @@
 				</h:outputFormat>
 			</f:facet>
 
-			<!-- 
-            <p:commandButton id="viewButton" icon="ui-icon-zoomin" update=":viewForm:viewPanelGrid" oncomplete="viewDialogWidget.show()" title="#{messages.label_view}">
-              <f:setPropertyActionListener value="#{powerMeter}" target="#{powerMeterBean.powerMeter}" />
-            </p:commandButton>
-            -->
+
+			<p:dataTable var="user" value="#{userBean.allUsers}">
+
+				<p:column headerText="Username">
+					<h:outputText value="#{user.username}" />
+				</p:column>
+
+				<p:column style="width:32px">
+					<p:commandButton update=":powerMetersForm:dropArea" icon="ui-icon-search">
+						<f:setPropertyActionListener value="#{user}"
+							target="#{userBean.user}" />
+					</p:commandButton>
+				</p:column>
+			</p:dataTable>
 
 
 			<h:form id="powerMetersForm">
 
-				<p:fieldset legend="AvailableCars">
 
-					<p:dataGrid id="availableCars" var="car"
-						value="#{tableBean.carsSmall}" columns="3">
+				<p:fieldset id="userMeters"
+					legend="PowerMeters selected for #{userBean.user.username}"
+					style="margin-top:20px">
+
+					<p:outputPanel id="dropArea">
+
+						<h:outputText value="!!!Drop here!!!"
+							rendered="#{empty userBean.userPowerMeters}"
+							style="font-size:24px;" />
+
+						<p:dataTable var="powerMeter" value="#{userBean.userPowerMeters}"
+							rendered="#{not empty userBean.userPowerMeters}">
+
+							<p:column headerText="Address">
+								<h:outputText value="#{powerMeter.address}" />
+							</p:column>
+
+							<p:column headerText="Bank">
+								<h:outputText value="#{powerMeter.bank}" />
+							</p:column>
+
+							<p:column style="width:32px">
+								<p:commandButton update=":powerMetersForm:display"
+									oncomplete="PF('powerMeterDialog').show()"
+									icon="ui-icon-search">
+									<f:setPropertyActionListener value="#{powerMeter}"
+										target="#{powerMeterBean.powerMeter}" />
+								</p:commandButton>
+								
+								<p:commandButton
+									action="#{powerMeterBean.free}" 
+									update=":powerMetersForm:unusedPowerMeters :powerMetersForm:dropArea"
+									icon="ui-icon-trash">
+									<f:setPropertyActionListener value="#{powerMeter}"
+										target="#{powerMeterBean.powerMeter}" />
+								</p:commandButton>
+							</p:column>
+						</p:dataTable>
+
+					</p:outputPanel>
+
+				</p:fieldset>
+
+				<p:fieldset legend="Unused Powermeters">
+
+					<p:dataGrid id="unusedPowerMeters" var="powerMeter"
+						value="#{userBean.unusedPowerMeters}" columns="3">
 
 						<p:column>
 
-							<p:panel id="pnl" header="#{car.model}" style="text-align:center">
+							<p:panel id="pnl" header="#{powerMeter.meterName}"
+								style="text-align:center">
 								<h:panelGrid columns="1" style="width:100%">
-									<p:graphicImage value="/images/cars/#{car.manufacturer}.jpg" />
+									<h:outputText value="#{powerMeter.address}" />
+									<h:outputText value="#{powerMeter.bank}" />
 								</h:panelGrid>
 							</p:panel>
 
@@ -44,75 +99,24 @@
 
 				</p:fieldset>
 
-				<p:fieldset id="selectedCars" legend="Selected Cars"
-					style="margin-top:20px">
-
-					<p:outputPanel id="dropArea">
-
-						<h:outputText value="!!!Drop here!!!"
-							rendered="#{empty tableBean.droppedCars}" style="font-size:24px;" />
-
-						<p:dataTable var="car" value="#{tableBean.droppedCars}"
-							rendered="#{not empty tableBean.droppedCars}">
-
-							<p:column headerText="Model">
-								<h:outputText value="#{car.model}" />
-							</p:column>
-
-							<p:column headerText="Year">
-								<h:outputText value="#{car.year}" />
-							</p:column>
-
-							<p:column headerText="Manufacturer">
-								<h:outputText value="#{car.manufacturer}" />
-							</p:column>
-
-							<p:column headerText="Color">
-								<h:outputText value="#{car.color}" />
-							</p:column>
-
-							<p:column style="width:32px">
-								<p:commandButton update=":carForm:display"
-									oncomplete="PF('carDialog').show()" icon="ui-icon-search">
-									<f:setPropertyActionListener value="#{car}"
-										target="#{tableBean.selectedCar}" />
-								</p:commandButton>
-							</p:column>
-						</p:dataTable>
-
-					</p:outputPanel>
-
-				</p:fieldset>
-
-				<p:droppable for="selectedCars" tolerance="touch"
-					activeStyleClass="ui-state-highlight" datasource="availableCars"
-					onDrop="handleDrop">
-					<p:ajax listener="#{tableBean.onCarDrop}"
-						update="dropArea availableCars" />
+				<p:droppable for="userMeters" tolerance="touch"
+					activeStyleClass="ui-state-highlight"
+					datasource="unusedPowerMeters" >
+					<p:ajax listener="#{userBean.onPowerMeterDropIn}"
+						update="dropArea unusedPowerMeters" />
 				</p:droppable>
 
-				<p:dialog header="Car Detail" widgetVar="carDialog"
+				<p:dialog header="PowerMeter Detail" widgetVar="powerMeterDialog"
 					resizable="false" draggable="false" width="200" showEffect="fade"
 					hideEffect="fade" modal="true">
 
 					<h:panelGrid id="display" columns="2" cellpadding="4">
 
 						<f:facet name="header">
-							<p:graphicImage
-								value="/images/cars/#{tableBean.selectedCar.manufacturer}.jpg" />
+							<h:outputText value="#{powerMeter.meterName}" />
 						</f:facet>
 
-						<h:outputText value="Model:" />
-						<h:outputText value="#{tableBean.selectedCar.model}" />
-
-						<h:outputText value="Year:" />
-						<h:outputText value="#{tableBean.selectedCar.year}" />
-
-						<h:outputText value="Manufacturer:" />
-						<h:outputText value="#{tableBean.selectedCar.manufacturer}" />
-
-						<h:outputText value="Color:" />
-						<h:outputText value="#{tableBean.selectedCar.color}" />
+						<h:outputText value="Some statistic data - TODO implement" />
 					</h:panelGrid>
 				</p:dialog>
 
