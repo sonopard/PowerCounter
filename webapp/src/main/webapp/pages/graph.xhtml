@@ -6,14 +6,15 @@
 	xmlns:p="http://primefaces.org/ui">
 <ui:composition template="../templates/blank.xhtml">
 	<ui:define name="content">
-		<p:panel id="mainPanel" toggleable="true" toggleSpeed="250">
+		<p:panel id="mainPanel" toggleable="true" toggleSpeed="250" style="text-align:center">
 			<f:facet name="header">
 				<h:outputFormat value="#{messages.label_welcome_titlepane}">
 					<f:param value="#{applicationBean.appName}" />
 				</h:outputFormat>
 			</f:facet>
 			<p:lineChart id="linear" value="#{graphBean.linearModel}"
-				legendPosition="e" title="Linear Chart" style="height:300px" />
+				legendPosition="e" title="Linear Chart" style="height:400px" />
+				
 			<h:form id="form">
 
 				<p:poll interval="1" update="load" />

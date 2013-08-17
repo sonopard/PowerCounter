@@ -60,8 +60,7 @@ public class GraphBean {
             	
             	lcs.set(i, countTicks);
             }
-
+            linearModel.addSeries(lcs);  
         }
-        linearModel.addSeries(lcs);  
     }  
 }

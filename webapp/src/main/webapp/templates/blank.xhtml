@@ -12,14 +12,11 @@
     </ui:insert>
   </h:head>
   <h:body>
-    <h:panelGrid cellspacing="0" cellpadding="0" styleClass="wrapper">
+    <h:panelGrid cellspacing="0" cellpadding="0" styleClass="wrapper" >
         <h:panelGroup>
-          <h:panelGrid cellspacing="0" cellpadding="0" styleClass="content">
+          <h:panelGrid cellspacing="0" cellpadding="0" style="width:1024px">
             <ui:insert name="content" />
           </h:panelGrid>
-          <ui:insert name="footer">
-            <ui:include src="footer.xhtml" />
-          </ui:insert>
         </h:panelGroup>
     </h:panelGrid>
   </h:body>
