@@ -19,8 +19,6 @@ headers = {'Content-type': 'application/json', 'Accept': 'application/json'}
 
 # pin, bank, chip
 ticksqueue = Queue()
-ticksqueue.put((7,0,23,int(unix_time_millis(datetime.datetime.utcnow()))))
-
 
 def jsonconsumer():
   while True:
@@ -40,7 +38,13 @@ def jsonconsumer():
       time.sleep(2)
       continue
 
+def gpioproducer():
+  while True:
+    ticksqueue.put((7,0,23,int(unix_time_millis(datetime.datetime.utcnow()))))
+    time.sleep(5)
+
 threading.Thread(target = jsonconsumer).start()
+threading.Thread(target = gpioproducer).start()
 
 while 1:
   pass
