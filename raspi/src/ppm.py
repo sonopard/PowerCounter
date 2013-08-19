@@ -3,6 +3,7 @@ import json
 from queue import Queue, Empty
 import time
 import datetime
+import threading
 #from SMBus import smbus
 
 def unix_time(dt):
@@ -21,18 +22,25 @@ ticksqueue = Queue()
 ticksqueue.put((7,0,23,int(unix_time_millis(datetime.datetime.utcnow()))))
 
 
-while True:
-  try:
-    tick = ticksqueue.get(block=False)
-    print(tick)
-  except Empty:
-    print("empty")
-    time.sleep(1)
-    continue
-  try:
-    data = {'pin': tick[0], 'bank': tick[1], 'address': tick[2], 'occurence': tick[3]}
-    r = requests.post(serviceurl, data=json.dumps(data), headers=headers)
-    print(r.text)
-  except:
-    ticksqueue.put(tick)
-    continue
+def jsonconsumer():
+  while True:
+    try:
+      tick = ticksqueue.get(block=False)
+    except Empty:
+      time.sleep(1)
+      continue
+    try:
+      data = {'pin': tick[0], 'bank': tick[1], 'address': tick[2], 'occurence': tick[3]}
+      r = requests.post(serviceurl, data=json.dumps(data), headers=headers)
+      print(r)
+      print(r.text)
+    except:
+      ticksqueue.put(tick)
+      print("retry")
+      time.sleep(2)
+      continue
+
+threading.Thread(target = jsonconsumer).start()
+
+while 1:
+  pass
