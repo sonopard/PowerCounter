@@ -32,4 +32,12 @@ privileged aspect TickDTO_Roo_JavaBean {
         this.bank = bank;
     }
     
+    public Integer TickDTO.getPin() {
+        return this.pin;
+    }
+    
+    public void TickDTO.setPin(Integer pin) {
+        this.pin = pin;
+    }
+    
 }

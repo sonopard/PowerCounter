@@ -51,13 +51,22 @@ public class PowerMeter {
     @ManyToOne
     private User user;
 
-    public static PowerMeter findPowerMetersByAddressAndBank(Byte address, Bank bank) {
+    public static PowerMeter findPowerMetersByAddressAndBankAndPin(Byte address, Bank bank, Integer pin) {
         if (address == null) throw new IllegalArgumentException("The address argument is required");
         if (bank == null) throw new IllegalArgumentException("The bank argument is required");
+        if (pin == null) throw new IllegalArgumentException("The pin argument is required");
         EntityManager em = PowerMeter.entityManager();
-        TypedQuery<PowerMeter> q = em.createQuery("" + "SELECT o FROM PowerMeter AS o " + "WHERE " + "o.address = :address " + "AND " + "o.bank = :bank ", PowerMeter.class);
+        TypedQuery<PowerMeter> q = em.createQuery("" + 
+        "SELECT o FROM PowerMeter AS o " + 
+        "WHERE " + 
+        	"o.address = :address " + 
+        "AND " + 
+        	"o.bank = :bank " + 
+        "AND "
+        	+ "o.pin = :pin", PowerMeter.class);
         q.setParameter("address", address);
         q.setParameter("bank", bank);
+        q.setParameter("pin", pin);
         return q.getSingleResult();
     }
 }

@@ -1,4 +1,5 @@
 package de.labor23.powercounter.web.json;
+import org.apache.log4j.Logger;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,11 +18,14 @@ import de.labor23.powercounter.dm.json.TickDTO;
 @RequestMapping("/tick")
 public class TickController {
 	
+	private final Logger log = Logger.getLogger(TickController.class);
+	
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> createFromJson(@RequestBody String json) {
+    	
     	//Example String : String str = new String("{address:35,bank:0}");
         TickDTO tickDTO = TickDTO.fromJsonToTickDTO(json);
-        System.out.println(tickDTO);
+        log.info(tickDTO);
         Tick t = new Tick(tickDTO);
         t.persist();
         HttpHeaders headers = new HttpHeaders();
@@ -38,8 +42,9 @@ public class TickController {
         if (tickDTO == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
-        tickDTO.setAddress((byte) 0x23);
+        tickDTO.setAddress((byte) 23);
         tickDTO.setBank(0);
+        tickDTO.setPin(7);
         return new ResponseEntity<String>(tickDTO.toJson(), headers, HttpStatus.OK);
     }
     

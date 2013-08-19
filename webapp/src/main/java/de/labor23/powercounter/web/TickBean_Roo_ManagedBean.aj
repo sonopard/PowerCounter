@@ -159,7 +159,7 @@ privileged aspect TickBean_Roo_ManagedBean {
         meterCreateInput.setCompleteMethod(expressionFactory.createMethodExpression(elContext, "#{tickBean.completeMeter}", List.class, new Class[] { String.class }));
         meterCreateInput.setDropdown(true);
         meterCreateInput.setValueExpression("var", expressionFactory.createValueExpression(elContext, "meter", String.class));
-        meterCreateInput.setValueExpression("itemLabel", expressionFactory.createValueExpression(elContext, "#{meter.meterName} #{meter.address} #{meter.ticksPerKWH}", String.class));
+        meterCreateInput.setValueExpression("itemLabel", expressionFactory.createValueExpression(elContext, "#{meter.meterName} #{meter.address} #{meter.pin} #{meter.ticksPerKWH}", String.class));
         meterCreateInput.setValueExpression("itemValue", expressionFactory.createValueExpression(elContext, "#{meter}", PowerMeter.class));
         meterCreateInput.setConverter(new PowerMeterConverter());
         meterCreateInput.setRequired(true);
@@ -215,7 +215,7 @@ privileged aspect TickBean_Roo_ManagedBean {
         meterEditInput.setCompleteMethod(expressionFactory.createMethodExpression(elContext, "#{tickBean.completeMeter}", List.class, new Class[] { String.class }));
         meterEditInput.setDropdown(true);
         meterEditInput.setValueExpression("var", expressionFactory.createValueExpression(elContext, "meter", String.class));
-        meterEditInput.setValueExpression("itemLabel", expressionFactory.createValueExpression(elContext, "#{meter.meterName} #{meter.address} #{meter.ticksPerKWH}", String.class));
+        meterEditInput.setValueExpression("itemLabel", expressionFactory.createValueExpression(elContext, "#{meter.meterName} #{meter.address} #{meter.pin} #{meter.ticksPerKWH}", String.class));
         meterEditInput.setValueExpression("itemValue", expressionFactory.createValueExpression(elContext, "#{meter}", PowerMeter.class));
         meterEditInput.setConverter(new PowerMeterConverter());
         meterEditInput.setRequired(true);
@@ -277,7 +277,7 @@ privileged aspect TickBean_Roo_ManagedBean {
     public List<PowerMeter> TickBean.completeMeter(String query) {
         List<PowerMeter> suggestions = new ArrayList<PowerMeter>();
         for (PowerMeter powerMeter : PowerMeter.findAllPowerMeters()) {
-            String powerMeterStr = String.valueOf(powerMeter.getMeterName() +  " "  + powerMeter.getAddress() +  " "  + powerMeter.getTicksPerKWH());
+            String powerMeterStr = String.valueOf(powerMeter.getMeterName() +  " "  + powerMeter.getAddress() +  " "  + powerMeter.getPin() +  " "  + powerMeter.getTicksPerKWH());
             if (powerMeterStr.toLowerCase().startsWith(query.toLowerCase())) {
                 suggestions.add(powerMeter);
             }
