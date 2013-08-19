@@ -14,7 +14,7 @@ def unix_time(dt):
 def unix_time_millis(dt):
     return unix_time(dt) * 1000.0
 
-serviceurl = "http://192.168.2.109:8080/powercounter/tick"
+serviceurl = "http://localhost:8080/powercounter/tick"
 headers = {'Content-type': 'application/json', 'Accept': 'application/json'}
 
 # pin, bank, chip
@@ -30,8 +30,6 @@ def jsonconsumer():
     try:
       data = {'pin': tick[0], 'bank': tick[1], 'address': tick[2], 'occurence': tick[3]}
       r = requests.post(serviceurl, data=json.dumps(data), headers=headers)
-      print(r)
-      print(r.text)
     except:
       ticksqueue.put(tick)
       print("retry")
@@ -41,7 +39,7 @@ def jsonconsumer():
 def gpioproducer():
   while True:
     ticksqueue.put((7,0,23,int(unix_time_millis(datetime.datetime.utcnow()))))
-    time.sleep(5)
+
 
 threading.Thread(target = jsonconsumer).start()
 threading.Thread(target = gpioproducer).start()
