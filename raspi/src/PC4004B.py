@@ -10,16 +10,18 @@ import RPi.GPIO as GPIO
 
 class PC4004B:
   DISPLAY_RS = 7 # Register Select selects data (DISPLAY_CHR) or command (DISPLAY_CMD) mode
-  DISPLAY_E  = 8 # chip enable 1
-  DISPLAY_E2 = 11 # chip enable 2
+  DISPLAY_E = {}
+  DISPLAY_E[1]  = 8 # chip enable 1
+  DISPLAY_E[2] = 11 # chip enable 2
   DISPLAY_DATA4 = 25
   DISPLAY_DATA5 = 24
   DISPLAY_DATA6 = 23
   DISPLAY_DATA7 = 18
 
   DISPLAY_WIDTH = 40   # Zeichen je Zeile
-  DISPLAY_LINE_1 = 0x80   # Adresse der ersten Display Zeile
-  DISPLAY_LINE_2 = 0xC0   # Adresse der zweiten Display Zeile
+  DISPLAY_LINE = {}
+  DISPLAY_LINE[1] = 0x80   # Adresse der ersten Display Zeile
+  DISPLAY_LINE[2] = 0xC0   # Adresse der zweiten Display Zeile
   DISPLAY_CHR = True
   DISPLAY_CMD = False
   E_PULSE = 0.00005 
@@ -28,26 +30,28 @@ class PC4004B:
   def __init__(self):
     GPIO.cleanup()
     GPIO.setmode(GPIO.BCM)
-    GPIO.setup(self.DISPLAY_E, GPIO.OUT)
+    GPIO.setup(self.DISPLAY_E[1], GPIO.OUT)
     GPIO.setup(self.DISPLAY_RS, GPIO.OUT)
     GPIO.setup(self.DISPLAY_DATA4, GPIO.OUT)
     GPIO.setup(self.DISPLAY_DATA5, GPIO.OUT)
     GPIO.setup(self.DISPLAY_DATA6, GPIO.OUT)
     GPIO.setup(self.DISPLAY_DATA7, GPIO.OUT)
-    GPIO.setup(self.DISPLAY_E2, GPIO.OUT)
-    self.display_init(self.DISPLAY_E)
-    self.display_init(self.DISPLAY_E2)
+    GPIO.setup(self.DISPLAY_E[2], GPIO.OUT)
+    self.display_init(self.DISPLAY_E[1])
+    self.display_init(self.DISPLAY_E[2])
+  
+  '''
+  This method displays a text of max 40 chars length
+  '''
+  def send_text(self, text, line):
+    if(len(text) > self.DISPLAY_WIDTH):
+      print("Error, text larger 40 chars")
+      return
 
-  def send_text(self, text, line, chip):
-    if line==2:
-      _line = self.DISPLAY_LINE_2
-    else:
-      _line = self.DISPLAY_LINE_1
-    if chip==2:
-      _chip = self.DISPLAY_E2
-    else:
-      _chip = self.DISPLAY_E
-    
+    # Calculate Chip parameters
+    _line = self.DISPLAY_LINE[line%2+1]
+    _chip = self.DISPLAY_E[1 if line<=2 else 2]
+
     self.lcd_byte(_line, self.DISPLAY_CMD, _chip)
     self.lcd_string(text, _chip)
   

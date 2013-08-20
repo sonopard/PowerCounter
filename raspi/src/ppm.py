@@ -24,7 +24,7 @@ service_headers = {'Content-type': 'application/json', 'Accept': 'application/js
 ticks_queue = Queue()
 
 display = PC4004B.PC4004B()
-display.send_text("Initializing...", 1, 1)
+display.send_text("Initializing...", 1)
 
 def jsonconsumer():
   while True:
@@ -51,7 +51,7 @@ def json_display_data_updater():
   while True:
     r = requests.get(display_service_url)
     display_data = r.json
-    display.send_text(str(display_data['occurence']), 2, 1) 
+    display.send_text(str(display_data['occurence']), 2) 
     time.sleep(10)    
 
 threading.Thread(target = json_display_data_updater).start()
