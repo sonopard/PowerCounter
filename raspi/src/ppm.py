@@ -16,7 +16,7 @@ def unix_time(dt):
 def unix_time_millis(dt):
     return unix_time(dt) * 1000.0
 
-tick_service_url = "http://192.168.2.176:8080/powercounter/tick"
+tick_service_url = "http://localhost:8080/powercounter/tick"
 display_service_url = tick_service_url
 service_headers = {'Content-type': 'application/json', 'Accept': 'application/json'}
 
