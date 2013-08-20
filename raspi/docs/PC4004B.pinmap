@@ -1,0 +1,20 @@
+
+
+Display                 Pi
+## Function             ## Function
+1  Vcc                  4  +5
+2  GND                  6  GND
+3  RS                   26 GP_7
+4  R/W                  9  GND
+5                       -
+6  Cont                 25 GND
+7                       -
+8                       -
+9                       -
+10                      -
+11 D5                   18 GP_24
+12 D4                   22 GP_25
+13 D7                   12 GP_18
+14 D6                   16 GP_23
+15 E2                   23 GP_11
+16 E1                   24 GP_8
