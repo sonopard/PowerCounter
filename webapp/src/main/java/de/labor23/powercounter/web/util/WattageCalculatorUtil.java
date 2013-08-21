@@ -18,17 +18,23 @@ public class WattageCalculatorUtil {
 		from.add(Calendar.SECOND, -timeframe);
 		to = Calendar.getInstance();
 		
+		countTicks = Tick.countTicksByOccurenceBetween(from.getTime(), to.getTime());
+
+		return calculateWatts(countTicks, timeframe);
+
+		
+	}
+	
+	public static Long calculateWatts(Long ticks, Integer timeframe) {
 		//amount of hours defined by timeframe
 		Double hours = timeframe.doubleValue()/3600;
 		
-		countTicks = Tick.countTicksByOccurenceBetween(from.getTime(), to.getTime());
-		Double ticksPerHour = countTicks/hours;
+		Double ticksPerHour = ticks/hours;
 		
 		//Uses an approx of 2000 ticks per hour emitted by PowerMeter
-		Long watt = (long) (ticksPerHour*2000);
+		Long watts = (long) (ticksPerHour*2000);
 		
-		return watt;
-		
+		return watts;
 	}
 
 }
