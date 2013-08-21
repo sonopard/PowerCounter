@@ -69,10 +69,10 @@ def json_display_current_wattage_updater():
     time.sleep(1)
 
 def display_show_network_error(url, message):
-  display.send_text("Network down? Webserver down?", 0)
-  display.send_text("request failed:", 1)
-  display.send_text(url[:PC4004B.DISPLAY_WIDTH], 2)
-  display.send_text(message[:PC4004B.DISPLAY_WIDTH], 3)
+  display.send_text("Network down? Webserver down?", 1)
+  display.send_text("request failed:", 2)
+  display.send_text(url[:PC4004B.DISPLAY_WIDTH], 3)
+  display.send_text(message[:PC4004B.DISPLAY_WIDTH], 4)
 
 thread_consumer = Thread(target = json_tick_consumer)
 thread_consumer.start()
