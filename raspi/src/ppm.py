@@ -52,7 +52,7 @@ def json_display_data_updater():
     try:
       r = requests.get(display_service_url)
       for display_line in r.json:
-        display.send_text(r.json[display_line], linemap[display_line][:PC4004B.DISPLAY_WIDTH])
+        display.send_text(r.json[display_line][:PC4004B.DISPLAY_WIDTH], linemap[display_line])
     except Exception as ex:
         display_show_network_error(display_service_url, str(ex))
     time.sleep(10)    
