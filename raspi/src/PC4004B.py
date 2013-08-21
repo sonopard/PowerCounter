@@ -49,7 +49,7 @@ class PC4004B:
       return
 
     # Calculate Chip parameters
-    _line = self.DISPLAY_LINE[line%2+1]
+    _line = self.DISPLAY_LINE[(line+1)%2+1]
     _chip = self.DISPLAY_E[1 if line<=2 else 2]
 
     self.lcd_byte(_line, self.DISPLAY_CMD, _chip)
