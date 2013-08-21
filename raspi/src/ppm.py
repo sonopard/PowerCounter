@@ -55,9 +55,13 @@ def json_display_data_updater():
     display.send_text(str(display_data['overall'])+" Watt", 2) 
     time.sleep(10)    
 
-threading.Thread(target = json_display_data_updater).start()
-threading.Thread(target = jsonconsumer).start()
-threading.Thread(target = gpioproducer).start()
+thread_consumer = threading.Thread(target = jsonconsumer)
+thread_consumer.start()
+thread_producer = threading.Thread(target = gpioproducer)
+thread_producer.start()
+thread_update = threading.Thread(target = json_display_data_updater)
+thread_update.start()
 
-while 1:
-  pass
+thread_consumer.join()
+thread_producer.join()
+thread_update.join()
