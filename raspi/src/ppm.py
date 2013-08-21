@@ -59,11 +59,15 @@ def json_display_data_updater():
     time.sleep(10)    
 
 def json_display_current_wattage_updater():
-    r = requests.get(display_service_url)
-    display_data = r.json
-    display.send_text("Aktueller Verbrauch:", 1)
-    display.send_text(str(display_data['overall'])+" Watt", 2)
-    time.sleep(10)
+    try:
+      r = requests.get(display_service_url)
+      display_data = r.json
+      display.send_text("Aktueller Verbrauch:", 1)
+      display.send_text(str(display_data['overall'])+" Watt", 2)
+    except Exception as ex:
+      display_show_network_error(display_service_url,str(ex))
+      continue
+    time.sleep(1)
 
 def display_show_network_error(url, message):
   display.send_text("Network down? Webserver down?", 0)
