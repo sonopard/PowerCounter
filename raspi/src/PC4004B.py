@@ -1,6 +1,6 @@
 import time
 #import RPi.GPIO as GPIO
-import GPIOdummy as GPIO
+import RPi.GPIO as GPIO
 from threading import Lock
 
 # support for the "PC4004B" displays floating around the lab. 
