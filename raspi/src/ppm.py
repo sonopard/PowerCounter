@@ -23,7 +23,7 @@ service_headers = {'Content-type': 'application/json', 'Accept': 'application/js
 ticks_queue = Queue()
 
 display = PC4004B()
-display.send_text("Initializing...", 0)
+display.send_text("Initializing...", 1)
 
 def json_tick_consumer():
   while True:
