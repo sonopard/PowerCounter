@@ -25,14 +25,14 @@ public class GraphBean {
 	List<PowerMeter> powerMeters;
 	
 	/**
-	 * Supposed time delta in miliseconds. Default=6000000 = 10 mins
+	 * Supposed time delta in miliseconds. Default=600000 = 10 mins
 	 */
 	Integer timeDelta = 600000;
 	
 	/**
-	 * Number of datapoints to display - currently fixed!
+	 * Number of datapoints to display - currently fixed to 12h
 	 */
-	Integer datapoints = 36;
+	Integer datapoints = 72;
 
 	CartesianChartModel linearModel;
 	
@@ -51,14 +51,14 @@ public class GraphBean {
             lcs.setLabel(p.getMeterName());
             
             //TODO: Calculate
-            for(int i = 0; i<datapoints; i++) {
+            for(int i = 0; i<=datapoints; i++) {
             	//get zeitraum in milis min/max
             	//search ticks between and powerMeter
             	from = new Date(now.getTime()-(timeDelta*(datapoints-i+1)));
             	to = new Date(now.getTime()-(timeDelta*(datapoints-i)));
             	countTicks = Tick.countTicksByOccurenceBetweenAndMeter(from, to, p);
             	
-            	lcs.set(i, countTicks);
+            	lcs.set((i-datapoints), countTicks);
             }
             linearModel.addSeries(lcs);  
         }
