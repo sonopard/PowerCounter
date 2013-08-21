@@ -53,13 +53,13 @@ class PC4004B:
       return
 
     # Calculate Chip parameters
-    line = self.DISPLAY_LINE[(line+1)%2+1]
-    chip = self.DISPLAY_E[1 if line<=2 else 2]
+    _line = self.DISPLAY_LINE[(line+1)%2+1]
+    _chip = self.DISPLAY_E[1 if line<=2 else 2]
 
     self._lock.acquire()
     try:
-      self.lcd_byte(line, self.DISPLAY_CMD, chip) # select the output address
-      self.lcd_string(text, chip)
+      self.lcd_byte(_line, self.DISPLAY_CMD, _chip) # select the output address
+      self.lcd_string(text, _chip)
     finally:
       self._lock.release()
   
