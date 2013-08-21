@@ -59,6 +59,7 @@ def json_display_data_updater():
     time.sleep(10)    
 
 def json_display_current_wattage_updater():
+  while True:
     try:
       r = requests.get(display_service_url)
       display_data = r.json
