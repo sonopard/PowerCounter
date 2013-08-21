@@ -52,7 +52,7 @@ def json_display_data_updater():
   while True:
     try:
       r = requests.get(display_service_url)
-      display_json = r.json()
+      display_json = r.json
       for display_line in display_json:
         display.send_text(display_json[display_line][:PC4004B.DISPLAY_WIDTH], display_line)
     except Exception as ex:
@@ -63,7 +63,7 @@ def json_display_current_wattage_updater():
   while True:
     try:
       r = requests.get(display_service_url)
-      display_json = r.json()
+      display_json = r.json
       display.send_text("Aktueller Verbrauch:", 1)
       display.send_text("{0} Watt".format(display_json['overall']), 2)
     except Exception as ex:
