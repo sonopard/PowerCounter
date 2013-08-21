@@ -4,7 +4,7 @@ import json
 from queue import Queue, Empty
 import time
 import datetime
-import threading
+from threading import Thread
 from PC4004B import PC4004B
 #from SMBus import smbus
 
@@ -72,11 +72,11 @@ def display_show_network_error(url, message):
   display.send_text(url[:PC4004B.DISPLAY_WIDTH], 1, 1)
   display.send_text(message[:PC4004B.DISPLAY_WIDTH])
 
-thread_consumer = threading.Thread(target = json_tick_consumer)
+thread_consumer = Thread(target = json_tick_consumer)
 thread_consumer.start()
-thread_producer = threading.Thread(target = mock_tick_producer)
+thread_producer = Thread(target = mock_tick_producer)
 thread_producer.start()
-thread_update = threading.Thread(target = json_display_current_wattage_updater)
+thread_update = Thread(target = json_display_current_wattage_updater)
 thread_update.start()
 
 thread_consumer.join()

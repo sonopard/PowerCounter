@@ -1,5 +1,6 @@
 import time
 import RPi.GPIO as GPIO
+from threading import Lock
 
 # support for the "PC4004B" displays floating around the lab. 
 # there is no datasheet - althought the PFY claims to have one
@@ -30,6 +31,7 @@ class PC4004B:
   DISPLAY_LINE = {1:0x80,2:0xC0} # line 1 and line 2 data address
 
   def __init__(self):
+    self._lock = Lock()
     GPIO.cleanup()
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(self.DISPLAY_E[1], GPIO.OUT)
@@ -54,8 +56,12 @@ class PC4004B:
     line = self.DISPLAY_LINE[line%2+1]
     chip = self.DISPLAY_E[1 if line<=2 else 2]
 
-    self.lcd_byte(line, self.DISPLAY_CMD, chip) # select the output address
-    self.lcd_string(text, chip)
+    self._lock.acquire()
+    try:
+      self.lcd_byte(line, self.DISPLAY_CMD, chip) # select the output address
+      self.lcd_string(text, chip)
+    finally:
+      self._lock.release()
   
   def __del__(self):
     GPIO.cleanup()
