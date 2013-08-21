@@ -80,7 +80,7 @@ thread_consumer = Thread(target = json_tick_consumer)
 thread_consumer.start()
 thread_producer = Thread(target = mock_tick_producer)
 thread_producer.start()
-thread_update = Thread(target = json_display_data_updater)
+thread_update = Thread(target = json_display_current_wattage_updater)
 thread_update.start()
 
 thread_consumer.join()
