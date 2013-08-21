@@ -1,5 +1,6 @@
 import time
-import RPi.GPIO as GPIO
+#import RPi.GPIO as GPIO
+import GPIOdummy as GPIO
 from threading import Lock
 
 # support for the "PC4004B" displays floating around the lab. 
@@ -48,10 +49,9 @@ class PC4004B:
   This method displays a text of max 40 chars length
   '''
   def send_text(self, text, line):
+    print("display: {0}: {1}".format(line, text))   
     if(len(text) > self.DISPLAY_WIDTH):
-      print("Error, text larger 40 chars")
-      return
-
+      raise ValueError("text can be max. 40 characters long")
     # Calculate Chip parameters
     _line = self.DISPLAY_LINE[(line+1)%2+1]
     _chip = self.DISPLAY_E[1 if line<=2 else 2]

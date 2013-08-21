@@ -46,14 +46,15 @@ def mock_tick_producer():
     ticks_queue.put((7,0,23,int(unix_time_millis(datetime.datetime.utcnow()))))
     time.sleep(1)
 
-# expects a simple response in the form of {lineid: 'text', lineid: 'text2'} where lineid is an int from 0-3
+# expects a simple response in the form of {lineid: 'text', lineid: 'text2'} where lineid is an int from 1-4
 # only affected lines are updated
 def json_display_data_updater():
   while True:
     try:
       r = requests.get(display_service_url)
-      for display_line in r.json:
-        display.send_text(r.json[display_line][:PC4004B.DISPLAY_WIDTH], display_line)
+      display_json = r.json()
+      for display_line in display_json:
+        display.send_text(display_json[display_line][:PC4004B.DISPLAY_WIDTH], display_line)
     except Exception as ex:
         display_show_network_error(display_service_url, str(ex))
     time.sleep(10)    
@@ -62,9 +63,9 @@ def json_display_current_wattage_updater():
   while True:
     try:
       r = requests.get(display_service_url)
-      display_data = r.json
+      display_json = r.json()
       display.send_text("Aktueller Verbrauch:", 1)
-      display.send_text(str(display_data['overall'])+" Watt", 2)
+      display.send_text("{0} Watt".format(display_json['overall']), 2)
     except Exception as ex:
       display_show_network_error(display_service_url,str(ex))
     time.sleep(1)
@@ -79,7 +80,7 @@ thread_consumer = Thread(target = json_tick_consumer)
 thread_consumer.start()
 thread_producer = Thread(target = mock_tick_producer)
 thread_producer.start()
-thread_update = Thread(target = json_display_current_wattage_updater)
+thread_update = Thread(target = json_display_data_updater)
 thread_update.start()
 
 thread_consumer.join()
