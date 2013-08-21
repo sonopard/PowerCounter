@@ -12,7 +12,7 @@ import de.labor23.powercounter.dm.Tick;
 import de.labor23.powercounter.dm.User;
 import de.labor23.powercounter.dm.hardware.Bank;
 
-//@Component
+@Component
 @Transactional
 public class ImportBean {
 
@@ -33,8 +33,8 @@ public class ImportBean {
 		p.setUser(u);
 		p.persist();
 
-		System.out.println(u.getPowerMeters());
-
+		//System.out.println(u.getPowerMeters());
+		/*
 		Tick t;
 		Date now = new Date();
 		Date tickdate;
@@ -50,7 +50,7 @@ public class ImportBean {
 			t.setMeter(p);
 			t.persist();
 		}
-
+		*/
 		/**
 		 * Create a unused PowerMeter
 		 */
