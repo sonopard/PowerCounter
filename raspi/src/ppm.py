@@ -23,7 +23,7 @@ service_headers = {'Content-type': 'application/json', 'Accept': 'application/js
 ticks_queue = Queue()
 
 display = PC4004B()
-display.send_text("Initializing...", 0)
+display.send_text("Initializing...", 1)
 
 def json_tick_consumer():
   while True:
@@ -46,7 +46,7 @@ def mock_tick_producer():
     ticks_queue.put((7,0,23,int(unix_time_millis(datetime.datetime.utcnow()))))
     time.sleep(1)
 
-# expects a simple response in the form of {lineid: 'text', lineid: 'text2'} where lineid is an int from 0-3
+# expects a simple response in the form of {lineid: 'text', lineid: 'text2'} where lineid is an int from 1-4
 # only affected lines are updated
 def json_display_data_updater():
   while True:
@@ -60,16 +60,15 @@ def json_display_data_updater():
 
 def json_display_current_wattage_updater():
     r = requests.get(display_service_url)
-    display_data = r.json
     display.send_text("Aktueller Verbrauch:", 1)
-    display.send_text(str(display_data['overall'])+" Watt", 2)
+    display.send_text("{0} Watt".format(r.json['overall']), 2)
     time.sleep(10)
 
 def display_show_network_error(url, message):
-  display.send_text("Network down? Webserver down?", 0)
-  display.send_text("request failed:", 1)
-  display.send_text(url[:PC4004B.DISPLAY_WIDTH], 2)
-  display.send_text(message[:PC4004B.DISPLAY_WIDTH], 3)
+  display.send_text("Network down? Webserver down?", 1)
+  display.send_text("request failed:", 2)
+  display.send_text(url[:PC4004B.DISPLAY_WIDTH], 3)
+  display.send_text(message[:PC4004B.DISPLAY_WIDTH], 4)
 
 thread_consumer = Thread(target = json_tick_consumer)
 thread_consumer.start()
