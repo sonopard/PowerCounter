@@ -1,0 +1,17 @@
+Intializing with interrupts:
+
+# WRITE Register Interrupt-on-change
+- GPINTEN 0x02 auf 8
+
+# WRITE Register configure Interrupt mode to interrupt on pin change
+- INTCON 0x04 auf 0
+
+
+# on Interrupt read
+def interrupt:
+   do something
+
+GPIO.add_event_detect(24, GPIO.RISING, callback = Interrupt, bouncetime = 200)
+
+# READ Register with io state on last interrupt, clears 
+- INTCAP 0x08
