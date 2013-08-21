@@ -12,7 +12,7 @@ import de.labor23.powercounter.dm.Tick;
 import de.labor23.powercounter.dm.User;
 import de.labor23.powercounter.dm.hardware.Bank;
 
-@Component
+//@Component
 @Transactional
 public class ImportBean {
 
