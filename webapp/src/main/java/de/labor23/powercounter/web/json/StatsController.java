@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import de.labor23.powercounter.dm.Tick;
 import de.labor23.powercounter.dm.json.TickDTO;
+import de.labor23.powercounter.web.util.WattageCalculatorUtil;
 
 @RooWebJson(jsonObject = TickDTO.class)
 @Controller
@@ -26,14 +27,8 @@ public class StatsController {
     @RequestMapping(value = "/overall", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> showOverallPerformance() {
-        Calendar from,to;
-        Long countTicks;
-		from = Calendar.getInstance();
-		from.add(Calendar.SECOND, -10);
-		to = Calendar.getInstance();
-		
-		countTicks = Tick.countTicksByOccurenceBetween(from.getTime(), to.getTime());
-		Long watt = (countTicks*600/20);
+    	
+    	Long watt = WattageCalculatorUtil.getCurrentWatts(10);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
