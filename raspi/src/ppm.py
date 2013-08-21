@@ -39,7 +39,6 @@ def json_tick_consumer():
       ticks_queue.put(tick)
       display_show_network_error(tick_service_url,str(ex))
       time.sleep(2)
-      continue
 
 def mock_tick_producer():
   while True:
@@ -68,7 +67,8 @@ def json_display_current_wattage_updater():
       display.send_text("{0} Watt".format(display_json['overall']), 2)
     except Exception as ex:
       display_show_network_error(display_service_url,str(ex))
-    time.sleep(1)
+    time.sleep(2)
+    
 
 def display_show_network_error(url, message):
   display.send_text("Network down? Webserver down?", 1)
