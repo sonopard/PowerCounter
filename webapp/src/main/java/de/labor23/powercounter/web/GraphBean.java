@@ -13,6 +13,7 @@ import org.springframework.roo.addon.serializable.RooSerializable;
 
 import de.labor23.powercounter.dm.PowerMeter;
 import de.labor23.powercounter.dm.Tick;
+import de.labor23.powercounter.web.util.WattageCalculatorUtil;
 
 @RooSerializable
 @RooJavaBean
@@ -56,9 +57,11 @@ public class GraphBean {
             	//search ticks between and powerMeter
             	from = new Date(now.getTime()-(timeDelta*(datapoints-i+1)));
             	to = new Date(now.getTime()-(timeDelta*(datapoints-i)));
-            	countTicks = Tick.countTicksByOccurenceBetweenAndMeter(from, to, p);
             	
-            	lcs.set((i-datapoints), countTicks);
+            	countTicks = Tick.countTicksByOccurenceBetweenAndMeter(from, to, p);
+            	Long watts = WattageCalculatorUtil.calculateWatts(countTicks, timeDelta/1000);
+            	
+            	lcs.set((i-datapoints), watts);
             }
             linearModel.addSeries(lcs);  
         }

@@ -12,6 +12,7 @@ import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.serializable.RooSerializable;
 
 import de.labor23.powercounter.dm.Tick;
+import de.labor23.powercounter.web.util.WattageCalculatorUtil;
 
 @RooSerializable
 @RooJavaBean
@@ -36,17 +37,9 @@ public class LiveBean {
     }  
 	
 	public MeterGaugeChartModel getLoad() {
-        Calendar from,to;
-        Long countTicks;
-		from = Calendar.getInstance();
-		from.add(Calendar.SECOND, -10);
-		to = Calendar.getInstance();
 		
-		countTicks = Tick.countTicksByOccurenceBetween(from.getTime(), to.getTime());
-		
-		Long watt = (countTicks*600/20);
-		
-        return  new MeterGaugeChartModel(watt, intervals);  
+		Long watts = WattageCalculatorUtil.getCurrentWatts(3);
+        return  new MeterGaugeChartModel(watts, intervals);  
 	}
 	
 }
