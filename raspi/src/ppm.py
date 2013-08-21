@@ -66,7 +66,6 @@ def json_display_current_wattage_updater():
       display.send_text(str(display_data['overall'])+" Watt", 2)
     except Exception as ex:
       display_show_network_error(display_service_url,str(ex))
-      continue
     time.sleep(1)
 
 def display_show_network_error(url, message):
