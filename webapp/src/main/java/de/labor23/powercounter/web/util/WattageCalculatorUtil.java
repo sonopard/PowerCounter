@@ -31,8 +31,8 @@ public class WattageCalculatorUtil {
 		
 		Double ticksPerHour = ticks/hours;
 		
-		//Uses an approx of 2000 ticks per hour emitted by PowerMeter
-		Long watts = (long) (ticksPerHour*2000);
+		//Uses an approx of 2000 ticks per kWh emitted by PowerMeter
+		Long watts = (long) (ticksPerHour/2);
 		
 		return watts;
 	}
