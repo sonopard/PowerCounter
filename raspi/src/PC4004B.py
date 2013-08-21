@@ -6,24 +6,30 @@ import RPi.GPIO as GPIO
 # pinouts have been determined by checking the controller outputs
 # it contains two HD44780 compatible controllers selected by E and E2 
 
-# Zuordnung der GPIO Pins (ggf. anpassen)
+# for a pinout and pinmap see the accompanying documentation directory
+
+# usage
+# display = PC4004B()
+# display.send_text("Up up in the butt", 1, 2) # line, chip - this will display the text in the 3rd line
 
 class PC4004B:
-  DISPLAY_RS = 7 # Register Select selects data (DISPLAY_CHR) or command (DISPLAY_CMD) mode
-  DISPLAY_E  = 8 # chip enable 1
-  DISPLAY_E2 = 11 # chip enable 2
+  # lines
+  DISPLAY_RS = 7 # register select selects data (DISPLAY_CHR) or command (DISPLAY_CMD) mode
+  DISPLAY_E  = 8 # chip enable 1 select the upper controller (upper 2 lines)
+  DISPLAY_E2 = 11 # chip enable 2 select the lower controller (lower 2 lines)
   DISPLAY_DATA4 = 25
   DISPLAY_DATA5 = 24
   DISPLAY_DATA6 = 23
   DISPLAY_DATA7 = 18
-
-  DISPLAY_WIDTH = 40   # Zeichen je Zeile
-  DISPLAY_LINE_1 = 0x80   # Adresse der ersten Display Zeile
-  DISPLAY_LINE_2 = 0xC0   # Adresse der zweiten Display Zeile
-  DISPLAY_CHR = True
-  DISPLAY_CMD = False
-  E_PULSE = 0.00005 
-  E_DELAY = 0.00005
+  
+  # display constants
+  DISPLAY_WIDTH = 40   # width in characters
+  DISPLAY_LINE_1 = 0x80   # line 1 data address
+  DISPLAY_LINE_2 = 0xC0   # line 2 data address
+  DISPLAY_CHR = True # RS high for characters
+  DISPLAY_CMD = False # RS low for commands
+  E_PULSE = 0.00005 # chip enable hold time
+  E_DELAY = 0.00005 # chip enable delay applied before and after latching enable
 
   def __init__(self):
     GPIO.cleanup()
@@ -40,21 +46,22 @@ class PC4004B:
 
   def send_text(self, text, line, chip):
     if line==2:
-      _line = self.DISPLAY_LINE_2
+      line = self.DISPLAY_LINE_2
     else:
-      _line = self.DISPLAY_LINE_1
+      line = self.DISPLAY_LINE_1
     if chip==2:
-      _chip = self.DISPLAY_E2
+      chip = self.DISPLAY_E2
     else:
-      _chip = self.DISPLAY_E
+      chip = self.DISPLAY_E
     
-    self.lcd_byte(_line, self.DISPLAY_CMD, _chip)
-    self.lcd_string(text, _chip)
+    self.lcd_byte(line, self.DISPLAY_CMD, chip) # select the output address
+    self.lcd_string(text, chip)
   
   def __del__(self):
     GPIO.cleanup()
 
   def display_init(self, enable):
+    # TODO figure out what this actually does
     self.lcd_byte(0b00110011,self.DISPLAY_CMD,enable) # cursor return wtf
     self.lcd_byte(0b00110010,self.DISPLAY_CMD,enable) # wtf
     self.lcd_byte(0b00101000,self.DISPLAY_CMD,enable) # ddram ad set: set ddram ad to 0b1000
@@ -68,6 +75,7 @@ class PC4004B:
       self.lcd_byte(ord(message[i]),self.DISPLAY_CHR,enable)
 
   def lcd_byte(self, bits, mode, enable):
+    # in 4-bit mode, output high nibble first, latch, then output low nibble and latch again.
     GPIO.output(self.DISPLAY_RS, mode)
     GPIO.output(self.DISPLAY_DATA4, False)
     GPIO.output(self.DISPLAY_DATA5, False)
