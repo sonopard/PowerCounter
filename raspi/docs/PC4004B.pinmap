@@ -1,9 +1,7 @@
-
-
 Display                 Pi
 ## Function             ## Function
-1  Vcc                  4  +5
-2  GND                  6  GND
+1  GND                  6  GND
+2  Vcc                  4  +5
 3  RS                   26 GP_7
 4  R/W                  9  GND
 5                       -
