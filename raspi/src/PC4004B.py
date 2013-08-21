@@ -15,8 +15,7 @@ import RPi.GPIO as GPIO
 class PC4004B:
   # lines
   DISPLAY_RS = 7 # register select selects data (DISPLAY_CHR) or command (DISPLAY_CMD) mode
-  DISPLAY_E  = 8 # chip enable 1 select the upper controller (upper 2 lines)
-  DISPLAY_E2 = 11 # chip enable 2 select the lower controller (lower 2 lines)
+  DISPLAY_E = {1:8, 2:11}
   DISPLAY_DATA4 = 25
   DISPLAY_DATA5 = 24
   DISPLAY_DATA6 = 23
@@ -24,36 +23,37 @@ class PC4004B:
   
   # display constants
   DISPLAY_WIDTH = 40   # width in characters
-  DISPLAY_LINE_1 = 0x80   # line 1 data address
-  DISPLAY_LINE_2 = 0xC0   # line 2 data address
   DISPLAY_CHR = True # RS high for characters
   DISPLAY_CMD = False # RS low for commands
   E_PULSE = 0.00005 # chip enable hold time
   E_DELAY = 0.00005 # chip enable delay applied before and after latching enable
+  DISPLAY_LINE = {1:0x80,2:0xC0} # line 1 and line 2 data address
 
   def __init__(self):
     GPIO.cleanup()
     GPIO.setmode(GPIO.BCM)
-    GPIO.setup(self.DISPLAY_E, GPIO.OUT)
+    GPIO.setup(self.DISPLAY_E[1], GPIO.OUT)
     GPIO.setup(self.DISPLAY_RS, GPIO.OUT)
     GPIO.setup(self.DISPLAY_DATA4, GPIO.OUT)
     GPIO.setup(self.DISPLAY_DATA5, GPIO.OUT)
     GPIO.setup(self.DISPLAY_DATA6, GPIO.OUT)
     GPIO.setup(self.DISPLAY_DATA7, GPIO.OUT)
-    GPIO.setup(self.DISPLAY_E2, GPIO.OUT)
-    self.display_init(self.DISPLAY_E)
-    self.display_init(self.DISPLAY_E2)
+    GPIO.setup(self.DISPLAY_E[2], GPIO.OUT)
+    self.display_init(self.DISPLAY_E[1])
+    self.display_init(self.DISPLAY_E[2])
+  
+  '''
+  This method displays a text of max 40 chars length
+  '''
+  def send_text(self, text, line):
+    if(len(text) > self.DISPLAY_WIDTH):
+      print("Error, text larger 40 chars")
+      return
 
-  def send_text(self, text, line, chip):
-    if line==2:
-      line = self.DISPLAY_LINE_2
-    else:
-      line = self.DISPLAY_LINE_1
-    if chip==2:
-      chip = self.DISPLAY_E2
-    else:
-      chip = self.DISPLAY_E
-    
+    # Calculate Chip parameters
+    line = self.DISPLAY_LINE[line%2+1]
+    chip = self.DISPLAY_E[1 if line<=2 else 2]
+
     self.lcd_byte(line, self.DISPLAY_CMD, chip) # select the output address
     self.lcd_string(text, chip)
   

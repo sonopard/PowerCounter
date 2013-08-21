@@ -16,8 +16,8 @@ def unix_time(dt):
 def unix_time_millis(dt):
     return unix_time(dt) * 1000.0
 
-tick_service_url = "http://192.168.2.176:8080/powercounter/tick"
-display_service_url = tick_service_url
+tick_service_url = "http://localhost:8080/powercounter/tick"
+display_service_url = "http://localhost:8080/powercounter/stats/overall"
 service_headers = {'Content-type': 'application/json', 'Accept': 'application/json'}
 
 ticks_queue = Queue()
@@ -46,16 +46,25 @@ def mock_tick_producer():
     ticks_queue.put((7,0,23,int(unix_time_millis(datetime.datetime.utcnow()))))
     time.sleep(1)
 
+# expects a simple response in the form of {lineid: 'text', lineid: 'text2'} where lineid is an int from 0-3
+# only affected lines are updated
 def json_display_data_updater():
   linemap = {0: (1,1), 1: (1,2), 2: (2,1), 3:(2,2)}
   while True:
     try:
       r = requests.get(display_service_url)
       for display_line in r.json:
-        display.send_text(r.json[display_line][:PC4004B.DISPLAY_WIDTH], linemap[display_line])
+        display.send_text(r.json[display_line][:PC4004B.DISPLAY_WIDTH], *linemap[display_line])
     except Exception as ex:
         display_show_network_error(display_service_url, str(ex))
     time.sleep(10)    
+
+def json_display_current_wattage_updater():
+    r = requests.get(display_service_url)
+    display_data = r.json
+    display.send_text("Aktueller Verbrauch:", 1)
+    display.send_text(str(display_data['overall'])+" Watt", 2)
+    time.sleep(10)
 
 def display_show_network_error(url, message):
   display.send_text("Network down? Webserver down?", 1, 1)
@@ -63,9 +72,13 @@ def display_show_network_error(url, message):
   display.send_text(url[:PC4004B.DISPLAY_WIDTH], 1, 1)
   display.send_text(message[:PC4004B.DISPLAY_WIDTH])
 
-threading.Thread(target = json_display_data_updater).start()
-threading.Thread(target = json_tick_consumer).start()
-threading.Thread(target = mock_tick_producer).start()
+thread_consumer = threading.Thread(target = json_tick_consumer)
+thread_consumer.start()
+thread_producer = threading.Thread(target = mock_tick_producer)
+thread_producer.start()
+thread_update = threading.Thread(target = json_display_current_wattage_updater)
+thread_update.start()
 
-while 1:
-  pass
+thread_consumer.join()
+thread_producer.join()
+thread_update.join()
