@@ -101,6 +101,10 @@
         <servlet-name>powercounter</servlet-name>
         <url-pattern>/tick</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>powercounter</servlet-name>
+        <url-pattern>/stats/overall</url-pattern>
+    </servlet-mapping>
     <!-- Security setting
     <filter>
 	                <filter-name>springSecurityFilterChain</filter-name>

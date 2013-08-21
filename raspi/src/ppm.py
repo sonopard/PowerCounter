@@ -17,7 +17,7 @@ def unix_time_millis(dt):
     return unix_time(dt) * 1000.0
 
 tick_service_url = "http://localhost:8080/powercounter/tick"
-display_service_url = tick_service_url
+display_service_url = "http://localhost:8080/powercounter/stats/overall"
 service_headers = {'Content-type': 'application/json', 'Accept': 'application/json'}
 
 # pin, bank, chip
@@ -51,7 +51,8 @@ def json_display_data_updater():
   while True:
     r = requests.get(display_service_url)
     display_data = r.json
-    display.send_text(str(display_data['occurence']), 2) 
+    display.send_text("Aktueller Verbrauch:", 1)
+    display.send_text(str(display_data['overall'])+" Watt", 2) 
     time.sleep(10)    
 
 threading.Thread(target = json_display_data_updater).start()
