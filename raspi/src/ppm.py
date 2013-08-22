@@ -6,6 +6,7 @@ import time
 import datetime
 from threading import Thread
 from PC4004B import PC4004B
+from IOShield import IOShield
 #from SMBus import smbus
 
 def unix_time(dt):
@@ -75,6 +76,10 @@ def display_show_network_error(url, message):
   display.send_text("request failed:", 2)
   display.send_text(url[:PC4004B.DISPLAY_WIDTH], 3)
   display.send_text(message[:PC4004B.DISPLAY_WIDTH], 4)
+
+shield = IOShield(0x20, 0x21)
+shield.set_input()
+shield.activate_interrupts()
 
 thread_consumer = Thread(target = json_tick_consumer)
 thread_consumer.start()
