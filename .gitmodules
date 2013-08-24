@@ -1,3 +1,6 @@
 [submodule "raspi/depends/RPLC"]
 	path = raspi/depends/RPLC
 	url = git://github.com/dbrgn/RPLCD
+[submodule "raspi/depends/quick2wire"]
+	path = raspi/depends/quick2wire
+	url = git://github.com/quick2wire/quick2wire-python-api
