@@ -1,0 +1,3 @@
+[submodule "raspi/depends/RPLC"]
+	path = raspi/depends/RPLC
+	url = git://github.com/dbrgn/RPLCD
