@@ -7,12 +7,15 @@ import datetime
 from threading import Thread
 import re
 import quick2wire.i2c as i2c
+import RPi.GPIO as GPIO
 
 from PC4004B import PC4004B
 
 # no such animal (yet)
 #from IOShield import IOShield
 
+# documentation note: You have to always work with a diagram of which channel number goes to which pin on the RPi board. Your script could break (omg)
+GPIO.setmode(GPIO.BCM)
 
 def unix_time(dt):
     epoch = datetime.datetime.utcfromtimestamp(0)
@@ -37,8 +40,13 @@ def display_show_failure(message):
   display.send_text("FAILURE",1)
   display.send_text(message[:PC4004B.DISPLAY_WIDTH],2)
 
+num_expanders = 1
+# this appears to be the only data layout that makes sense given quick2wire's i2c calls
+intstates = [ [ 0, 0 ], [ 0, 0 ] ]
+# pin 15, 13 => addresses[0] addresses[1]
+expander_interrupt_channels = { 22:0, 27:1 }
 # iopi chip i2c addresses
-expander_addresses = { 0x20, 0x21 }
+expander_addresses = [ 0x20, 0x21 ]
 # registers in sequential mode. increment by one for input msb. or use autoincrement when reading or writing two bytes.
 # this is ONLY for iocon.bank=0
 expander_registers = {
@@ -55,8 +63,8 @@ expander_registers = {
     "olat": 0x14 
     }
 
-with i2c.I2CMaster() as bus:
-  for address in expander_addresses:
+bus = i2c.I2CMaster()
+for address in expander_addresses:
 # configure IOCON
 # bit7            ...               bit1   bit8
 # BANK MIRROR SEQOP DISSLW HAEN ODR INTPOL None
@@ -69,17 +77,32 @@ with i2c.I2CMaster() as bus:
 # odr: 0 => interrupt pins work as open drains TODO clarify electrical connection
 # intpol: 0 => if odr is disabled, controls int pins driving polarity
 # 
-    try:
-      bus.transaction(i2c.writing_bytes(address, expander_registers["iocon"], 0b0100000))
+  try:
+    bus.transaction(i2c.writing_bytes(address, expander_registers["iocon"], 0b0100000))
 # configure all pins for input
-      bus.transaction(i2c.writing_bytes(address, expander_registers["iodir"], 0xFF, 0xFF))
+    bus.transaction(i2c.writing_bytes(address, expander_registers["iodir"], 0xFF, 0xFF))
 # configure all pins for internal pullup 
 # TODO wire the pins through the optical couplers to logical ground
-      bus.transaction(i2c.writing_bytes(address, expander_registers["gppu"], 0xFF, 0xFF))
-    except IOError as ex:
-      display_show_failure(str(ex))
-      while True:
-        time.sleep(1) # keep the display ports initialized until terminated.... 
+    bus.transaction(i2c.writing_bytes(address, expander_registers["gppu"], 0xFF, 0xFF))
+# input polarity is inverted. opto open = pullup active. therefore, invert.
+    bus.transaction(i2c.writing_bytes(address, expander_registers["ipol"], 0xFF, 0xFF))
+# configure interrupt behavior: trigger when input changes to high. (rising flank)
+# this is actually default, but needs to be parameterized
+    bus.transaction(i2c.writing_bytes(address, expander_registers["defval"], 0x00, 0x00))
+# configure interrupt behavior: trigger on compare with DEFVAL instead of both flanks
+    bus.transaction(i2c.writing_bytes(address, expander_registers["intcon"], 0xFF, 0xFF))
+# turn on ALL the things
+    bus.transaction(i2c.writing_bytes(address, expander_registers["gpinten"], 0xFF, 0xFF))
+      
+  except IOError as ex:
+    try:
+      bus.close()
+    except:
+      pass
+    display_show_failure(str(ex))
+    while True:
+      time.sleep(1) # keep the display ports initialized until terminated.... 
+
 
 
 def json_tick_consumer():
@@ -133,14 +156,32 @@ def display_show_network_error(url, message):
   display.send_text(url[:PC4004B.DISPLAY_WIDTH], 3)
   display.send_text(message[:PC4004B.DISPLAY_WIDTH], 4)
 
+def iopi_interrupt_callback(channel):
+# according to the datasheet, the mcp does rather proper interrupt sequencing,
+# so it would be sufficient to check intflags.
+# however, interrupt clear occurs when the LSb of intcap or gpio is read
+# so to reset the irq we have to read either one.
+# rather than reading an additional two registers,
+# we use bitmasks here to find the pin that triggered the interrupt.
+  oldintstates = intstates[expander_interrupt_channels[channel]]
+  bus.transaction(i2c.reading_into(
+    expander_interrupt_channels[channel], 
+    expander_registers["intcap"], 
+    intstates[expander_interrupt_channels[channel]]
+    ))
+  masked = [oldintstates[0] & ~intstates[exander_interrupt_channels[channel]][0], oldintstates[1] & ~intstates[exander_interrupt_channels[channel]][1]]
+  ticks_queue.put((
+    bit_length(masked[0]) if masked[0]>0 else bit_length(masked[1]), # yields the pin number
+    0 if masked[0]>0 else 1, # yields the port number associated with the pin which for some reason is called bank
+    expander_addresses[expander_interrupt_channels[channel]], # yields the i2c address of the controller associated with the port
+    int(unix_time_millis(datetime.datetime.utcnow()))))
 
-def iopi_tick_producer():
- with i2c.I2CMaster() as bus:
-  mcp_inputs = [
-      bus.transaction(i2c.reading(expander_addresses[0], expander_registers["gpio"], 2)),
-      bus.transaction(i2c.reading(expander_addresses[1], expander_registers["gpio"], 2))
-  ]
-  #while True:
+def iopi_tick_producer_init():
+#set up one interrupt line for each MCP23017 chips. INTA and INTB are initialized as synced.
+# MCP configured for open drain = enabled pullup
+  for intchannel in expander_interrupt_channels:
+    GPIO.setup(intchannel, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.add_event_detect(intchannel, GPIO.RISING, callback=iopi_interrupt_callback)
 
 
 #shield = IOShield(0x20, 0x21)
