@@ -66,7 +66,7 @@ expander_registers = {
 bus = i2c.I2CMaster()
 for address in expander_addresses:
 # configure IOCON
-# bit7            ...               bit1   bit8
+# bit7            ...               bit1   bit0
 # BANK MIRROR SEQOP DISSLW HAEN ODR INTPOL None
 # POS for all bits is 0
 # bank: 0 => register organization sequential
