@@ -165,7 +165,7 @@ def iopi_interrupt_callback(channel):
 # we use bitmasks here to find the pin that triggered the interrupt.
   oldintstates = copy.deepcopy(intstates[expander_interrupt_channels[channel]])
   bus.transaction(i2c.reading_into(
-    expander_interrupt_channels[channel], 
+    expander_addresses[expander_interrupt_channels[channel]], 
     expander_registers["intcap"], 
     intstates[expander_interrupt_channels[channel]]
     ))
