@@ -76,6 +76,16 @@ with i2c.I2CMaster() as bus:
 # configure all pins for internal pullup 
 # TODO wire the pins through the optical couplers to logical ground
       bus.transaction(i2c.writing_bytes(address, expander_registers["gppu"], 0xFF, 0xFF))
+# input polarity is inverted. opto open = pullup active. therefore, invert.
+      bus.transaction(i2c.writing_bytes(address, expander_registers["ipol"], 0xFF, 0xFF))
+# configure interrupt behavior: trigger when input changes to high, trigger.
+# this is actually default, but needs to be parameterized
+      bus.transaction(i2c.writing_bytes(address, expander_registers["defval"], 0x00, 0x00))
+# configure interrupt behavior: trigger on compare with DEFVAL instead of both flanks
+      bus.transaction(i2c.writing_bytes(address, expander_registers["intcon"], 0xFF, 0xFF))
+# interrupt source pins: all
+      bus.transaction(i2c.writing_bytes(address, expander_registers["gpinten"], 0xFF, 0xFF))
+
     except IOError as ex:
       display_show_failure(str(ex))
       while True:
