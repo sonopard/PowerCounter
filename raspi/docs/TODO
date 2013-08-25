@@ -1,0 +1,9 @@
+1. encapsulate mcp functionality into a generic and efficient module, sanitize and optimize that code. now comes with added testability free of charge!
+1. extend RPLCD to support multiple controllers (enable lines), pull request it, and replace the ugly PC4004B class with it
+1. catch keyboardinterrupt, sigterm handler, allow for graceful shutdown
+1. rename tick request field "bank" to "port" or, much preferred, make it 16bit as it should be, then the python code can be simplified to use 16 bit ints instead of a sequence of two bytes
+2. run tests for mcp module using a hardware driven test (signal generator at first, then program an arduino to hammer the pins a bit)
+3. build the panel electronics
+3. complete system test with arduino trigger
+
+
