@@ -5,9 +5,14 @@ from queue import Queue, Empty
 import time
 import datetime
 from threading import Thread
+import re
+import quick2wire.i2c as i2c
+
 from PC4004B import PC4004B
-from IOShield import IOShield
-#from SMBus import smbus
+
+# no such animal (yet)
+#from IOShield import IOShield
+
 
 def unix_time(dt):
     epoch = datetime.datetime.utcfromtimestamp(0)
@@ -17,14 +22,65 @@ def unix_time(dt):
 def unix_time_millis(dt):
     return unix_time(dt) * 1000.0
 
+
 tick_service_url = "http://localhost:8080/powercounter/tick"
 display_service_url = "http://localhost:8080/powercounter/stats/overall"
 service_headers = {'Content-type': 'application/json', 'Accept': 'application/json'}
+
 
 ticks_queue = Queue()
 
 display = PC4004B()
 display.send_text("Initializing...", 1)
+
+def display_show_failure(message):
+  display.send_text("FAILURE",1)
+  display.send_text(message[:PC4004B.DISPLAY_WIDTH],2)
+
+# iopi chip i2c addresses
+expander_addresses = { 0x20, 0x21 }
+# registers in sequential mode. increment by one for input msb. or use autoincrement when reading or writing two bytes.
+# this is ONLY for iocon.bank=0
+expander_registers = {
+    "iocon": 0x0A, 
+    "iodir": 0x00, 
+    "ipol": 0x02, 
+    "gpinten": 0x04, 
+    "defval": 0x06,
+    "intcon": 0x08,
+    "gppu": 0xC, 
+    "intf": 0x0E,
+    "intcap": 0x10,
+    "gpio": 0x12,
+    "olat": 0x14 
+    }
+
+with i2c.I2CMaster() as bus:
+  for address in expander_addresses:
+# configure IOCON
+# bit7            ...               bit1   bit8
+# BANK MIRROR SEQOP DISSLW HAEN ODR INTPOL None
+# POS for all bits is 0
+# bank: 0 => register organization sequential
+# mirror: 1 => both IRQ pins are internally connected (16bit mode)
+# seqop: 0 => do autoincrement address pointer on read
+# disslw: 0 => do not deslew SDA
+# haen: 0 => address pin config enable, MCP23S17 only (not used)
+# odr: 0 => interrupt pins work as open drains TODO clarify electrical connection
+# intpol: 0 => if odr is disabled, controls int pins driving polarity
+# 
+    try:
+      bus.transaction(i2c.writing_bytes(address, expander_registers["iocon"], 0b0100000))
+# configure all pins for input
+      bus.transaction(i2c.writing_bytes(address, expander_registers["iodir"], 0xFF, 0xFF))
+# configure all pins for internal pullup 
+# TODO wire the pins through the optical couplers to logical ground
+      bus.transaction(i2c.writing_bytes(address, expander_registers["gppu"], 0xFF, 0xFF))
+    except IOError as ex:
+      display_show_failure(str(ex))
+      while True:
+        time.sleep(1) # keep the display ports initialized until terminated.... 
+
 
 def json_tick_consumer():
   while True:
@@ -77,9 +133,19 @@ def display_show_network_error(url, message):
   display.send_text(url[:PC4004B.DISPLAY_WIDTH], 3)
   display.send_text(message[:PC4004B.DISPLAY_WIDTH], 4)
 
-shield = IOShield(0x20, 0x21)
-shield.set_input()
-shield.activate_interrupts()
+
+def iopi_tick_producer():
+ with i2c.I2CMaster() as bus:
+  mcp_inputs = [
+      bus.transaction(i2c.reading(expander_addresses[0], expander_registers["gpio"], 2)),
+      bus.transaction(i2c.reading(expander_addresses[1], expander_registers["gpio"], 2))
+  ]
+  #while True:
+
+
+#shield = IOShield(0x20, 0x21)
+#shield.set_input()
+#shield.activate_interrupts()
 
 thread_consumer = Thread(target = json_tick_consumer)
 thread_consumer.start()
