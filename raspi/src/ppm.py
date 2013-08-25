@@ -78,7 +78,7 @@ for address in expander_addresses:
 # intpol: 0 => if odr is disabled, controls int pins driving polarity
 # 
   try:
-    bus.transaction(i2c.writing_bytes(address, expander_registers["iocon"], 0b0100000))
+    bus.transaction(i2c.writing_bytes(address, expander_registers["iocon"], 0b01000000))
 # configure all pins for input
     bus.transaction(i2c.writing_bytes(address, expander_registers["iodir"], 0xFF, 0xFF))
 # configure all pins for internal pullup 
