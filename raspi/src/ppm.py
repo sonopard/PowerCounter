@@ -163,7 +163,7 @@ def iopi_interrupt_callback(channel):
 # so to reset the irq we have to read either one.
 # rather than reading an additional two registers,
 # we use bitmasks here to find the pin that triggered the interrupt.
-  oldintstates = intstates[expander_interrupt_channels[channel]]
+  oldintstates = copy.deepcopy(intstates[expander_interrupt_channels[channel]])
   bus.transaction(i2c.reading_into(
     expander_interrupt_channels[channel], 
     expander_registers["intcap"], 
