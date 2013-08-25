@@ -7,6 +7,7 @@ import datetime
 from threading import Thread
 import re
 import quick2wire.i2c as i2c
+import RPi.GPIO as GPIO
 
 from PC4004B import PC4004B
 
@@ -78,7 +79,7 @@ with i2c.I2CMaster() as bus:
       bus.transaction(i2c.writing_bytes(address, expander_registers["gppu"], 0xFF, 0xFF))
 # input polarity is inverted. opto open = pullup active. therefore, invert.
       bus.transaction(i2c.writing_bytes(address, expander_registers["ipol"], 0xFF, 0xFF))
-# configure interrupt behavior: trigger when input changes to high, trigger.
+# configure interrupt behavior: trigger when input changes to high.
 # this is actually default, but needs to be parameterized
       bus.transaction(i2c.writing_bytes(address, expander_registers["defval"], 0x00, 0x00))
 # configure interrupt behavior: trigger on compare with DEFVAL instead of both flanks
@@ -90,6 +91,13 @@ with i2c.I2CMaster() as bus:
       display_show_failure(str(ex))
       while True:
         time.sleep(1) # keep the display ports initialized until terminated.... 
+
+#set up one interrupt line for each MCP23017 chips. INTA and INTB are initialized as synced.
+GPIO.setmode(GPIO.BCM)
+# pin 15, MCP configured for open drain = enabled pullup
+GPIO.setup(22, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+# pin 13
+GPIO.setup(27, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 
 def json_tick_consumer():
@@ -147,10 +155,15 @@ def display_show_network_error(url, message):
 def iopi_tick_producer():
  with i2c.I2CMaster() as bus:
   mcp_inputs = [
-      bus.transaction(i2c.reading(expander_addresses[0], expander_registers["gpio"], 2)),
-      bus.transaction(i2c.reading(expander_addresses[1], expander_registers["gpio"], 2))
+# read the initial gpio state.
+#      bus.transaction(i2c.reading(expander_addresses[0], expander_registers["gpio"], 2)),
+#      bus.transaction(i2c.reading(expander_addresses[1], expander_registers["gpio"], 2))
+    "\0\0",
+    "\0\0"
   ]
-  #while True:
+  while True:
+    GPIO.wait_for_edge(23, GPIO.FALLING)
+
 
 
 #shield = IOShield(0x20, 0x21)
