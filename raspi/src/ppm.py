@@ -14,6 +14,8 @@ from PC4004B import PC4004B
 # no such animal (yet)
 #from IOShield import IOShield
 
+# documentation note: You have to always work with a diagram of which channel number goes to which pin on the RPi board. Your script could break (omg)
+GPIO.setmode(GPIO.BCM)
 
 def unix_time(dt):
     epoch = datetime.datetime.utcfromtimestamp(0)
@@ -38,11 +40,13 @@ def display_show_failure(message):
   display.send_text("FAILURE",1)
   display.send_text(message[:PC4004B.DISPLAY_WIDTH],2)
 
+num_expanders = 1
+# this appears to be the only data layout that makes sense given quick2wire's i2c calls
 intstates = [ [ 0, 0 ], [ 0, 0 ] ]
 # pin 15, 13 => addresses[0] addresses[1]
 expander_interrupt_channels = { 22:0, 27:1 }
 # iopi chip i2c addresses
-expander_addresses = { 0x20, 0x21 }
+expander_addresses = [ 0x20, 0x21 ]
 # registers in sequential mode. increment by one for input msb. or use autoincrement when reading or writing two bytes.
 # this is ONLY for iocon.bank=0
 expander_registers = {
@@ -82,12 +86,12 @@ for address in expander_addresses:
     bus.transaction(i2c.writing_bytes(address, expander_registers["gppu"], 0xFF, 0xFF))
 # input polarity is inverted. opto open = pullup active. therefore, invert.
     bus.transaction(i2c.writing_bytes(address, expander_registers["ipol"], 0xFF, 0xFF))
-# configure interrupt behavior: trigger when input changes to high.
+# configure interrupt behavior: trigger when input changes to high. (rising flank)
 # this is actually default, but needs to be parameterized
     bus.transaction(i2c.writing_bytes(address, expander_registers["defval"], 0x00, 0x00))
 # configure interrupt behavior: trigger on compare with DEFVAL instead of both flanks
     bus.transaction(i2c.writing_bytes(address, expander_registers["intcon"], 0xFF, 0xFF))
-# interrupt source pins: all
+# turn on ALL the things
     bus.transaction(i2c.writing_bytes(address, expander_registers["gpinten"], 0xFF, 0xFF))
       
   except IOError as ex:
@@ -99,7 +103,6 @@ for address in expander_addresses:
     while True:
       time.sleep(1) # keep the display ports initialized until terminated.... 
 
-GPIO.setmode(GPIO.BCM)
 
 
 def json_tick_consumer():
@@ -154,11 +157,24 @@ def display_show_network_error(url, message):
   display.send_text(message[:PC4004B.DISPLAY_WIDTH], 4)
 
 def iopi_interrupt_callback(channel):
+# according to the datasheet, the mcp does rather proper interrupt sequencing,
+# so it would be sufficient to check intflags.
+# however, interrupt clear occurs when the LSb of intcap or gpio is read
+# so to reset the irq we have to read either one.
+# rather than reading an additional two registers,
+# we use bitmasks here to find the pin that triggered the interrupt.
+  oldintstates = intstates[expander_interrupt_channels[channel]]
   bus.transaction(i2c.reading_into(
     expander_interrupt_channels[channel], 
     expander_registers["intcap"], 
     intstates[expander_interrupt_channels[channel]]
     ))
+  masked = [oldintstates[0] & ~intstates[exander_interrupt_channels[channel]][0], oldintstates[1] & ~intstates[exander_interrupt_channels[channel]][1]]
+  ticks_queue.put((
+    bit_length(masked[0]) if masked[0]>0 else bit_length(masked[1]), # yields the pin number
+    0 if masked[0]>0 else 1, # yields the port number associated with the pin which for some reason is called bank
+    expander_addresses[expander_interrupt_channels[channel]], # yields the i2c address of the controller associated with the port
+    int(unix_time_millis(datetime.datetime.utcnow()))))
 
 def iopi_tick_producer_init():
 #set up one interrupt line for each MCP23017 chips. INTA and INTB are initialized as synced.
