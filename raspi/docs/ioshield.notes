@@ -7,8 +7,12 @@ i2c-dev
 /etc/modprobe.d/raspi-blacklist.conf:
 #blacklist i2c-bcm2708
 
-sudo apt-get install python-smbus
+# python2 only, do not use
+# use quick2wire from ../depends/
+# sudo apt-get install python-smbus
 sudo apt-get install i2c-tools
+
+
 
 --- probe for the shield --
 sudo i2cdetect -y 0
