@@ -28,6 +28,7 @@ class IOShield:
   REGISTER_GPINTEN = 0X02
   REGISTER_DEFVAL = 0X03
   REGISTER_INTCON = 0X04
+  REGISTER_GPPU = 0X06
   REGISTER_INTF = 0X07
   REGISTER_INTCAP = 0X08
   REGISTER_GPIO = 0X09
@@ -40,6 +41,9 @@ class IOShield:
   def __init__(self, address_chip1, address_chip2):
     #self._lock = Lock()
 
+    '''
+    guess the correct configuration for revision of raspberry pi
+    '''
     for line in open('/proc/cpuinfo').readlines():
       m = re.match('(.*?)\s*:\s*(.*)', line)
       if m:
@@ -62,10 +66,30 @@ class IOShield:
 
   def init_shield(self, chip):
     #Set BANK = 1 for easier Addressing of banks (IOCON register)
-    self.set_config(self.IOCON['BANK'])
-    #Set both banks to input pin
-    for bank in self.BANK:
-      self.BUS.write_byte_data(chip,bank|self.REGISTER_IODIR,0xff)
+    #EVERYTHING else goes to zero
+    self.BUS.write_byte_data(chip,0x08, self.IOCON['BANK'])
+
+  '''
+  This method basically sets up the chip for further operations and 
+  defines the electrical wiring as followes:
+   - internal pullups are activated
+   - connects to ground if power meter closes circuit
+  '''
+  def activate_interrupts(self):
+    for chip in self.ADDRESS:
+      for bank in self.BANK:
+        #Set both banks to input pin
+        self.BUS.write_byte_data(chip,bank|self.REGISTER_IODIR,0xff)
+
+        # WRITE Register Interrupt activate (GPINTEN)
+        self.BUS.write_byte_data(chip,bank|self.REGISTER_GPINTEN,0xff)
+        # WRITE Register configure Interrupt mode to interrupt on pin change (INTCON)
+        self.BUS.write_byte_data(chip,bank|self.REGISTER_INTCON, 0x00)
+        # WRITE Register activate internal interrupts
+        self.BUS.write_byte_data(chip,bank|self.REGISTER_GPPU, 0xff)
+        # Set MIRROR = 1 for INTA and INTB OR'd (IOCON register)
+        self.set_config(self.IOCON['MIRROR'])
+
 
   def set_config(self, config):
     for chip in self.ADDRESS:
@@ -76,16 +100,6 @@ class IOShield:
     for chip in self.ADDRESS:
       iocon = self.BUS.read_byte_data(chip,self.REGISTER_IOCON)
       self.BUS.write_byte_data(chip,self.REGISTER_IOCON, iocon & ~ config)
-
-  def activate_interrupts(self):
-    for chip in self.ADDRESS:
-      for bank in self.BANK:
-        # WRITE Register Interrupt-on-change activate (GPINTEN)
-        self.BUS.write_byte_data(chip,bank|self.REGISTER_GPINTEN,0xff)
-        # WRITE Register configure Interrupt mode to interrupt on pin change (INTCON)
-        self.BUS.write_byte_data(chip,bank|self.REGISTER_INTCON, 0x00)
-        # Set MIRROR = 1 for INTA and INTB OR'd (IOCON register)
-        self.set_config(self.IOCON['MIRROR'])
 
   def add_interrupt_handler(self, callback_method, gpio_pin):
     GPIO.add_event_detect(gpio_pin, GPIO.RISING, callback = callback_method, bouncetime = 200)
