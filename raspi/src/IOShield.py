@@ -22,12 +22,12 @@ class IOShield:
   INTERRUPT_HANDLER = {}
 
   # Register Mapping for Bank=1 mode
-  REGISTER_IOCON = 0X05
   REGISTER_IODIR = 0X00
   REGISTER_IPOL = 0X01
   REGISTER_GPINTEN = 0X02
   REGISTER_DEFVAL = 0X03
   REGISTER_INTCON = 0X04
+  REGISTER_IOCON = 0X05
   REGISTER_GPPU = 0X06
   REGISTER_INTF = 0X07
   REGISTER_INTCAP = 0X08
@@ -83,9 +83,13 @@ class IOShield:
 
         # WRITE Register Interrupt activate (GPINTEN)
         self.BUS.write_byte_data(chip,bank|self.REGISTER_GPINTEN,0xff)
-        # WRITE Register configure Interrupt mode to interrupt on pin change (INTCON)
-        self.BUS.write_byte_data(chip,bank|self.REGISTER_INTCON, 0x00)
-        # WRITE Register activate internal interrupts
+        ## WRITE Register configure Interrupt mode to interrupt on pin change (INTCON)
+        #self.BUS.write_byte_data(chip,bank|self.REGISTER_INTCON, 0x00)
+        # WRITE Register configure Interrupt mode to compare on Value(INTCON)
+        self.BUS.write_byte_data(chip,bank|self.REGISTER_INTCON, 0xff)
+        # WRITE Register set compare Value 
+        self.BUS.write_byte_data(chip,bank|self.REGISTER_DEFCON, 0xff)
+        # WRITE Register activate internal pullups
         self.BUS.write_byte_data(chip,bank|self.REGISTER_GPPU, 0xff)
         # Set MIRROR = 1 for INTA and INTB OR'd (IOCON register)
         self.set_config(self.IOCON['MIRROR'])
