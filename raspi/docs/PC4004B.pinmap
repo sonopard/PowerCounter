@@ -18,3 +18,10 @@ K => PWR_GND
 14 D7                   12 GP_18
 15 E1                   24 GP_8
 16 E2                   23 GP_11
+
+IOpi
+chip1 inta              15 GP_27
+chip2 inta              13 GP_22  
+
+first 6 pins 1:1 except pin 4 nc
+
