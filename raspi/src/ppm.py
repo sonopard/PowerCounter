@@ -44,7 +44,7 @@ num_expanders = 1
 # this appears to be the only data layout that makes sense given quick2wire's i2c calls
 intstates = [ [ 0, 0 ], [ 0, 0 ] ]
 # pin 15, 13 => addresses[0] addresses[1]
-expander_interrupt_channels = { 22:0, 27:1 }
+expander_interrupt_channels = { 27:0, 22:1 }
 # iopi chip i2c addresses
 expander_addresses = [ 0x20, 0x21 ]
 # registers in sequential mode. increment by one for input msb. or use autoincrement when reading or writing two bytes.
