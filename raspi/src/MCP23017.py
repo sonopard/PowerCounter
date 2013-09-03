@@ -69,7 +69,7 @@ class MCP23017:
           # WRITE Register configure Interrupt mode to compare on Value(INTCON)
           i2c.writing_bytes(self.ADDRESS,port|self.REGISTER_INTCON, 0xff),
           # WRITE Register set compare Value 
-          i2c.writing_bytes(self.ADDRESS,port|self.REGISTER_DEFCON, 0xff),
+          i2c.writing_bytes(self.ADDRESS,port|self.REGISTER_DEFVAL, 0xff),
           # WRITE Register activate internal pullups
           i2c.writing_bytes(self.ADDRESS,port|self.REGISTER_GPPU, 0xff),
           # WRITE Register Interrupt activate (GPINTEN)
