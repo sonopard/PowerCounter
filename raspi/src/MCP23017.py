@@ -105,10 +105,11 @@ class MCP23017:
       GPIO.add_event_detect(gpio_pin, GPIO.FALLING, callback = callback_method)
 
   def read(self, register):
-
+    log.debug("Reading register 0x{0:x}".format(register))
     byte = self.BUS.transaction(
               i2c.writing_bytes(self.ADDRESS, register),
               i2c.reading(self.ADDRESS, 1))
+    log.debug("0b{0:b}".format(byte[0][0]))
     return byte[0][0]
 
 '''
