@@ -16,6 +16,9 @@ class ChipTest(unittest.TestCase):
     for i in range(0,0x1A):
       byte = self.chip1.read(i)
 
+  def test_setup_device(self):
+    self.chip1.unset_config(self.chip1.IOCON['BANK'])
+
 if __name__ == '__main__':
     logging.basicConfig()
     logging.getLogger( "MCP23017" ).setLevel( logging.DEBUG )
