@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import MCP23017
 import unittest
+import logging
 
 class ChipTest(unittest.TestCase):
   chip1 = MCP23017.MCP23017(0x20, {'A': 17})#, 'B': 0x00})
