@@ -15,7 +15,7 @@ import logging
 # shield = IOShield()
 # display.send_text("Up up in the butt", 1, 2) # line, chip - this will display the text in the 3rd line
 
-log = logging.getLogger("IOShield")
+log = logging.getLogger("MCP23017")
 
 class MCP23017:
   ADDRESS = 0x21
@@ -59,7 +59,7 @@ class MCP23017:
   '''
   def activate_interrupts(self):
       for port in self.PORTS:
-        log.info("Configuring port "+str(port))
+        logging.info("Configuring port "+str(port))
         self.BUS.transaction(
           #Set port to input pin
           i2c.writing_bytes(self.ADDRESS,port|self.REGISTER_IODIR,0xff),
@@ -81,7 +81,7 @@ class MCP23017:
 
 
   def set_config(self, config):
-      log.info("Register Access IOCON, adding: 0b{0:b}".format(config))
+      logging.info("Register Access IOCON, adding: 0b{0:b}".format(config))
       iocon = self.BUS.transaction(
               i2c.writing_bytes(self.ADDRESS, self.REGISTER_IOCON),
               i2c.reading(self.ADDRESS, 1))
