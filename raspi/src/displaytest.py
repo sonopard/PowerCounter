@@ -44,7 +44,7 @@ def main():
 	lcd_byte(DISPLAY_LINE_2, DISPLAY_CMD,DISPLAY_E2)
 	lcd_string("funktioniert! :)",DISPLAY_E2)	
 
-	time.sleep(5)
+	time.sleep(25)
 	GPIO.cleanup()
 
 

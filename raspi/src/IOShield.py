@@ -1,6 +1,6 @@
 import time
-#from dummy_smbus import SMBus
-from smbus import SMBus
+from dummy_smbus import SMBus
+#from smbus import SMBus
 import re
 
 # support for the "PC4004B" displays floating around the lab. 
