@@ -15,7 +15,6 @@ class ChipTest(unittest.TestCase):
   def test_read_registers(self):
     for i in range(0,0x1A):
       byte = self.chip1.read(i)
-      log.info(byte[0][0])
 
 if __name__ == '__main__':
     logging.basicConfig()
