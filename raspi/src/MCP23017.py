@@ -58,22 +58,22 @@ class MCP23017:
    - connects to ground if power meter closes circuit
   '''
   def activate_interrupts(self):
-      for port in self.PORTS:
-        log.info("Configuring port "+str(port))
+      for name, prefix in self.PORTS.items():
+        log.info("Configuring port 0x{0:x}".format(prefix))
         self.BUS.transaction(
           #Set port to input pin
-          i2c.writing_bytes(self.ADDRESS,port|self.REGISTER_IODIR,0xff),
+          i2c.writing_bytes(self.ADDRESS,prefix|self.REGISTER_IODIR,0xff),
 
           ## WRITE Register configure Interrupt mode to interrupt on pin change (INTCON)
           #self.BUS.write_byte_data(chip,bank|self.REGISTER_INTCON, 0x00)
           # WRITE Register configure Interrupt mode to compare on Value(INTCON)
-          i2c.writing_bytes(self.ADDRESS,port|self.REGISTER_INTCON, 0xff),
+          i2c.writing_bytes(self.ADDRESS,prefix|self.REGISTER_INTCON, 0xff),
           # WRITE Register set compare Value 
-          i2c.writing_bytes(self.ADDRESS,port|self.REGISTER_DEFVAL, 0xff),
+          i2c.writing_bytes(self.ADDRESS,prefix|self.REGISTER_DEFVAL, 0xff),
           # WRITE Register activate internal pullups
-          i2c.writing_bytes(self.ADDRESS,port|self.REGISTER_GPPU, 0xff),
+          i2c.writing_bytes(self.ADDRESS,prefix|self.REGISTER_GPPU, 0xff),
           # WRITE Register Interrupt activate (GPINTEN)
-          i2c.writing_bytes(self.ADDRESS,port|self.REGISTER_GPINTEN,0xff),
+          i2c.writing_bytes(self.ADDRESS,prefix|self.REGISTER_GPINTEN,0xff),
         )
   def activate_mirror(self):
     # Set MIRROR = 1 for INTA and INTB OR'd (IOCON register)
