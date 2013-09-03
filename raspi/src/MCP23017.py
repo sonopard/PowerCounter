@@ -70,7 +70,7 @@ class MCP23017:
           # WRITE Register set compare Value 
           i2c.writing_bytes(self.ADDRESS,port|self.REGISTER_DEFCON, 0xff),
           # WRITE Register activate internal pullups
-          i2c.writing_bytes(self.ADDRESS,port|self.REGISTER_GPPU, 0xff)
+          i2c.writing_bytes(self.ADDRESS,port|self.REGISTER_GPPU, 0xff),
           # WRITE Register Interrupt activate (GPINTEN)
           i2c.writing_bytes(self.ADDRESS,port|self.REGISTER_GPINTEN,0xff),
         )
