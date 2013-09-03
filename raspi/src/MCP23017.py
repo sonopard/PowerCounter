@@ -16,10 +16,23 @@ import logging
 # display.send_text("Up up in the butt", 1, 2) # line, chip - this will display the text in the 3rd line
 
 log = logging.getLogger("MCP23017")
+BUS = i2c.I2CMaster()
 
+class The_Callback:
+  lock = Lock()
+  def __init__(self, prefix, callback):
+    GPIO.add_event_detect(gpio_pin, GPIO.FALLING, callback = self.the_callback(callback))
+
+  def the_callback(callback):
+    lock.acquire()
+    #READ INTF TO FIND OUT INITIATING PIN
+    #READ GPIO TO GET CURRENTLY ACTIVATED PINS
+    #SOMEHOW TAKE A INTERNAL STATE
+    #CALL CALLBACK WITH STATE /CHANGES
+    callback()
+    lock.release()
 class MCP23017:
   ADDRESS = 0x21
-  BUS = None
   PORTS = {0:0x00, 1:0x10}
   INTERRUPTS = None
 
@@ -45,10 +58,9 @@ class MCP23017:
     #self._lock = Lock()
     self.ADDRESS = address
     self.INTERRUPTS = interrupts
-    self.BUS = i2c.I2CMaster()
     #Set BANK = 1 for easier Addressing of banks (IOCON register)
     #EVERYTHING else goes to zero
-    self.BUS.transaction( 
+    BUS.transaction( 
       i2c.writing_bytes(self.ADDRESS,0x0A, self.IOCON['BANK']))
 
   '''
@@ -60,7 +72,7 @@ class MCP23017:
   def activate_interrupts(self):
       for name, prefix in self.PORTS.items():
         log.info("Configuring port 0x{0:x}".format(prefix))
-        self.BUS.transaction(
+        BUS.transaction(
           #Set port to input pin
           i2c.writing_bytes(self.ADDRESS,prefix|self.REGISTER_IODIR,0xff),
 
@@ -82,30 +94,31 @@ class MCP23017:
 
   def set_config(self, config):
       log.info("Register Access IOCON, adding: 0b{0:b}".format(config))
-      iocon = self.BUS.transaction(
+      iocon = BUS.transaction(
               i2c.writing_bytes(self.ADDRESS, self.REGISTER_IOCON),
               i2c.reading(self.ADDRESS, 1))
       log.debug("IOCON before 0b{0:b}".format(iocon[0][0]))
-      self.BUS.transaction(
+      BUS.transaction(
               i2c.writing_bytes(self.ADDRESS, self.REGISTER_IOCON, iocon[0][0] | config))
       log.debug("IOCON after 0b{0:b}".format(iocon[0][0] | config))
 
   def unset_config(self, config):
       log.info("Register Access IOCON, removing: 0b{0:b}".format(config))
-      iocon = self.BUS.transaction(
+      iocon = BUS.transaction(
               i2c.writing_bytes(self.ADDRESS, self.REGISTER_IOCON),
               i2c.reading(self.ADDRESS, 1))
       log.debug("IOCON before 0b{0:b}".format(iocon[0][0]))
-      self.BUS.transaction(
+      BUS.transaction(
               i2c.writing_bytes(self.ADDRESS, self.REGISTER_IOCON, iocon[0][0] & ~ config))
-      log.debug("IOCON after 0b{0:b}".format(iocon & ~ config))
+      log.debug("IOCON after 0b{0:b}".format(iocon[0][0] & ~ config))
 
   def add_interrupt_handler(self, callback_method):
-    for gpio_pin in self.INTERRUPTS:
-      GPIO.add_event_detect(gpio_pin, GPIO.FALLING, callback = callback_method)
+    for name, prefix in self.PORTS.items():
+      the_callback = The_Callback(prefix, callback_method)
+
 
   def read(self, register):
-    byte = self.BUS.transaction(
+    byte = BUS.transaction(
               i2c.writing_bytes(self.ADDRESS, register),
               i2c.reading(self.ADDRESS, 1))
     log.debug("Reading register 0x{0:x} value 0b{1:b}".format(register, byte[0][0]))
