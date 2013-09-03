@@ -81,24 +81,24 @@ class MCP23017:
 
 
   def set_config(self, config):
-      log.info("Register Access IOCON, adding: "+config)
+      log.info("Register Access IOCON, adding: 0b{0:b}".format(config))
       iocon = self.BUS.transaction(
               i2c.writing_bytes(self.ADDRESS, self.REGISTER_IOCON),
               i2c.reading(self.ADDRESS, 1))
-      log.debug("IOCON before "+ iocon[0][0])
+      log.debug("IOCON before 0b{0:b}".format(iocon[0][0]))
       self.BUS.transaction(
               i2c.writing_bytes(self.ADDRESS, self.REGISTER_IOCON, iocon[0][0] | config))
-      log.debug("IOCON after "+ (iocon[0][0] | config))
+      log.debug("IOCON after 0b{0:b}".format(iocon[0][0] | config))
 
   def unset_config(self, config):
-      log.info("Register Access IOCON, removing: "+config)
+      log.info("Register Access IOCON, removing: 0b{0:b}".format(config))
       iocon = self.BUS.transaction(
               i2c.writing_bytes(self.ADDRESS, self.REGISTER_IOCON),
               i2c.reading(self.ADDRESS, 1))
-      log.debug("IOCON before "+ iocon)
+      log.debug("IOCON before 0b{0:b}".format(iocon[0][0]))
       self.BUS.transaction(
               i2c.writing_bytes(self.ADDRESS, self.REGISTER_IOCON, iocon[0][0] & ~ config))
-      log.debug("IOCON after "+ (iocon & ~ config))
+      log.debug("IOCON after 0b{0:b}".format(iocon & ~ config))
 
   def add_interrupt_handler(self, callback_method):
     for gpio_pin in self.INTERRUPTS:
