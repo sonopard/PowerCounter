@@ -21,8 +21,7 @@ class MCP23017:
   ADDRESS = 0x21
   BUS = None
   PORTS = {0:0x00, 1:0x10}
-
-  INTERRUPT_HANDLER = {}
+  INTERRUPTS = None
 
   # Register Mapping for Bank=1 mode
   REGISTER_IODIR = 0X00
@@ -42,9 +41,10 @@ class MCP23017:
   IOCON = {'BANK':0b10000000, 'MIRROR': 0b01000000, 'DISSLW': 0b00010000, 'HAEN': 0b00001000, 'ODR': 0b00000100, 'INTPOL': 0b00000010}
 
 
-  def __init__(self, address, interrupt_a, interrupt_b):
+  def __init__(self, address, interrupts):
     #self._lock = Lock()
     self.ADDRESS = address
+    self.INTERRUPTS = interrupts
     self.BUS = i2c.I2CMaster()
     #Set BANK = 1 for easier Addressing of banks (IOCON register)
     #EVERYTHING else goes to zero
@@ -63,8 +63,6 @@ class MCP23017:
           #Set port to input pin
           i2c.writing_bytes(self.ADDRESS,port|self.REGISTER_IODIR,0xff),
 
-          # WRITE Register Interrupt activate (GPINTEN)
-          i2c.writing_bytes(self.ADDRESS,port|self.REGISTER_GPINTEN,0xff),
           ## WRITE Register configure Interrupt mode to interrupt on pin change (INTCON)
           #self.BUS.write_byte_data(chip,bank|self.REGISTER_INTCON, 0x00)
           # WRITE Register configure Interrupt mode to compare on Value(INTCON)
@@ -73,9 +71,11 @@ class MCP23017:
           i2c.writing_bytes(self.ADDRESS,port|self.REGISTER_DEFCON, 0xff),
           # WRITE Register activate internal pullups
           i2c.writing_bytes(self.ADDRESS,port|self.REGISTER_GPPU, 0xff)
-          # Set MIRROR = 1 for INTA and INTB OR'd (IOCON register)
+          # WRITE Register Interrupt activate (GPINTEN)
+          i2c.writing_bytes(self.ADDRESS,port|self.REGISTER_GPINTEN,0xff),
         )
   def activate_mirror(self):
+    # Set MIRROR = 1 for INTA and INTB OR'd (IOCON register)
     self.set_config(self.IOCON['MIRROR'])
 
 
@@ -100,8 +100,8 @@ class MCP23017:
       log.debug("IOCON after "+ (iocon & ~ config))
 
   def add_interrupt_handler(self, callback_method):
-    for  gpio_pin in self.INTERRUPTS:
-      GPIO.add_event_detect(gpio_pin, GPIO.RISING, callback = callback_method, bouncetime = 200)
+    for gpio_pin in self.INTERRUPTS:
+      GPIO.add_event_detect(gpio_pin, GPIO.FALLING, callback = callback_method)
 
   def read(self, register):
 
