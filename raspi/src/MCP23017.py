@@ -59,7 +59,7 @@ class MCP23017:
   '''
   def activate_interrupts(self):
       for port in self.PORTS:
-        logging.info("Configuring port "+str(port))
+        log.info("Configuring port "+str(port))
         self.BUS.transaction(
           #Set port to input pin
           i2c.writing_bytes(self.ADDRESS,port|self.REGISTER_IODIR,0xff),
@@ -81,7 +81,7 @@ class MCP23017:
 
 
   def set_config(self, config):
-      logging.info("Register Access IOCON, adding: 0b{0:b}".format(config))
+      log.info("Register Access IOCON, adding: 0b{0:b}".format(config))
       iocon = self.BUS.transaction(
               i2c.writing_bytes(self.ADDRESS, self.REGISTER_IOCON),
               i2c.reading(self.ADDRESS, 1))
