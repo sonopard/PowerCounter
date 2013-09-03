@@ -48,7 +48,8 @@ class MCP23017:
     self.BUS = i2c.I2CMaster()
     #Set BANK = 1 for easier Addressing of banks (IOCON register)
     #EVERYTHING else goes to zero
-    self.BUS.write_byte_data(self.ADDRESS,0x08, self.IOCON['BANK'])
+    self.BUS.transaction( 
+      i2c.writing_bytes(self.ADDRESS,0x08, self.IOCON['BANK']))
 
   '''
   This method basically sets up the chip for further operations and 
