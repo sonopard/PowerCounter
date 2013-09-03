@@ -17,7 +17,7 @@ import logging
 
 log = logging.getLogger("IOShield")
 
-class IOShield:
+class MCP23017:
   ADDRESS = 0x21
   BUS = None
   PORTS = {0:0x00, 1:0x10}
