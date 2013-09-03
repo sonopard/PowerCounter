@@ -49,7 +49,7 @@ class MCP23017:
     #Set BANK = 1 for easier Addressing of banks (IOCON register)
     #EVERYTHING else goes to zero
     self.BUS.transaction( 
-      i2c.writing_bytes(self.ADDRESS,0xA0, self.IOCON['BANK']))
+      i2c.writing_bytes(self.ADDRESS,0x0A, self.IOCON['BANK']))
 
   '''
   This method basically sets up the chip for further operations and 
