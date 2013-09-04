@@ -75,7 +75,7 @@ class PortManager:
     log.debug("Set callback "+str(callback))
     self.external_callback = callback
 
-  def (self, channel):
+  def callback(self, channel):
     log.debug('This is a edge event callback function!')
     log.debug('Edge detected on channel %s'%channel)
     log.debug('This is run in a different thread to your main program')
