@@ -117,6 +117,8 @@ class MCP23017:
     #self._lock = Lock()
     self.ADDRESS = address
     self.INTERRUPTS = interrupts
+    for name, gpio_pin in interrupts:
+      GPIO.setup(gpio_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
     #Set BANK = 1 for easier Addressing of banks (IOCON register)
     #EVERYTHING else goes to zero
