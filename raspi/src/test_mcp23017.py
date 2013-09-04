@@ -31,5 +31,4 @@ if __name__ == '__main__':
     logging.basicConfig()
     logging.getLogger( "MCP23017" ).setLevel( logging.DEBUG )
     log.setLevel(logging.DEBUG)
-    logging.setLevel(logging.DEBUG)
     unittest.main()

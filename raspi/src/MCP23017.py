@@ -3,6 +3,9 @@ import quick2wire.i2c as i2c
 #from smbus import SMBus
 import re
 import logging
+from threading import Lock
+import RPi.GPIO as GPIO
+
 
 # support for the "PC4004B" displays floating around the lab. 
 # there is no datasheet - althought the PFY claims to have one
