@@ -36,6 +36,9 @@ REGISTER_INTCAP = 0X08
 REGISTER_GPIO = 0X09
 REGISTER_OLAT = 0X0A
 
+# mapping of pins inside icocon register
+IOCON = {'BANK':0b10000000, 'MIRROR': 0b01000000, 'DISSLW': 0b00010000, 'HAEN': 0b00001000, 'ODR': 0b00000100, 'INTPOL': 0b00000010}
+
 
 class PortManager:
 
@@ -119,10 +122,6 @@ class MCP23017:
   PORTS = {}
   INTERRUPTS = None
 
-  # mapping of pins inside icocon register
-  IOCON = {'BANK':0b10000000, 'MIRROR': 0b01000000, 'DISSLW': 0b00010000, 'HAEN': 0b00001000, 'ODR': 0b00000100, 'INTPOL': 0b00000010}
-
-
   def __init__(self, address, interrupts):
     log.info("Initialize MCP23017 on 0x{0:x}".format(address))
     #self._lock = Lock()
@@ -135,7 +134,7 @@ class MCP23017:
     #Set BANK = 1 for easier Addressing of banks (IOCON register)
     #EVERYTHING else goes to zero
     BUS.transaction( 
-      i2c.writing_bytes(self.ADDRESS,0x0A, self.IOCON['BANK']))
+      i2c.writing_bytes(self.ADDRESS,0x0A, IOCON['BANK']))
 
     #!important! Initialize Ports after bank has been set to 1
     self.PORTS = { 'A': PortManager(address, 0x00), 
@@ -144,7 +143,7 @@ class MCP23017:
 
   def activate_mirror(self):
     # Set MIRROR = 1 for INTA and INTB OR'd (IOCON register)
-    self.set_config(self.IOCON['MIRROR'])
+    self.set_config(IOCON['MIRROR'])
 
 
   def set_config(self, config):
