@@ -46,7 +46,7 @@ class PortManager:
     self.lock = Lock()
     self.address = address
     self.prefix = prefix
-    log.debug("Configuring port 0x{0:x}".format(prefix))
+    log.debug("Initialize port 0x{0:x}".format(prefix))
     '''
     This method basically sets up the chip for further operations and 
     defines the electrical wiring as followes:
@@ -160,6 +160,7 @@ class MCP23017:
 
   def set_interrupt_handler(self, callback_method):
     for name, gpio_pin in self.INTERRUPTS.items():
+      log.info("Add callback to GPIO {0} (Interrupt {1}) on address 0x{2:x}".format(gpio_pin,name, self.ADDRESS))
       port_manager = self.PORTS[name]
       port_manager.set_callback(callback_method)
       GPIO.add_event_detect(gpio_pin, GPIO.FALLING, callback = port_manager.callback)
