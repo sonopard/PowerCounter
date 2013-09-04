@@ -117,7 +117,7 @@ class MCP23017:
     #self._lock = Lock()
     self.ADDRESS = address
     self.INTERRUPTS = interrupts
-    for name, gpio_pin in interrupts:
+    for name, gpio_pin in self.INTERRUPTS.items():
       log.debug("Initialize Interrupt "+name)
       GPIO.setup(gpio_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
