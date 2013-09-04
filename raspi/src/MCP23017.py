@@ -42,6 +42,28 @@ class PortManager:
     self.lock = Lock()
     self.address = address
     self.prefix = prefix
+    log.info("Configuring port 0x{0:x}".format(prefix))
+    '''
+    This method basically sets up the chip for further operations and 
+    defines the electrical wiring as followes:
+     - internal pullups are activated
+     - connects to ground if power meter closes circuit
+    '''
+    BUS.transaction(
+      #Set port to input pin
+      i2c.writing_bytes(address,prefix|REGISTER_IODIR,0xff),
+
+      ## WRITE Register configure Interrupt mode to interrupt on pin change (INTCON)
+      #self.BUS.write_byte_data(chip,bank|self.REGISTER_INTCON, 0x00)
+      # WRITE Register configure Interrupt mode to compare on Value(INTCON)
+      i2c.writing_bytes(address,prefix|REGISTER_INTCON, 0xff),
+      # WRITE Register set compare Value 
+      i2c.writing_bytes(address,prefix|REGISTER_DEFVAL, 0xff),
+      # WRITE Register activate internal pullups
+      i2c.writing_bytes(address,prefix|REGISTER_GPPU, 0xff),
+      # WRITE Register Interrupt activate (GPINTEN)
+      i2c.writing_bytes(address,prefix|REGISTER_GPINTEN,0xff),
+    )
 
   def set_callback(self, callback):
     self.callback = callback
@@ -84,9 +106,6 @@ class MCP23017:
   PORTS = {}
   INTERRUPTS = None
 
-
-
-
   # mapping of pins inside icocon register
   IOCON = {'BANK':0b10000000, 'MIRROR': 0b01000000, 'DISSLW': 0b00010000, 'HAEN': 0b00001000, 'ODR': 0b00000100, 'INTPOL': 0b00000010}
 
@@ -95,37 +114,17 @@ class MCP23017:
     #self._lock = Lock()
     self.ADDRESS = address
     self.INTERRUPTS = interrupts
-    self.PORTS = { 'A': PortManager(address, 0x00, interrupt['A']), 
-                   'B': PortManager(address, 0x10, interrupt['B'])}
+
     #Set BANK = 1 for easier Addressing of banks (IOCON register)
     #EVERYTHING else goes to zero
     BUS.transaction( 
       i2c.writing_bytes(self.ADDRESS,0x0A, self.IOCON['BANK']))
 
-  '''
-  This method basically sets up the chip for further operations and 
-  defines the electrical wiring as followes:
-   - internal pullups are activated
-   - connects to ground if power meter closes circuit
-  '''
-  def activate_interrupts(self):
-      for name, port in self.PORTS.items():
-        log.info("Configuring port 0x{0:x}".format(prefix))
-        BUS.transaction(
-          #Set port to input pin
-          i2c.writing_bytes(self.ADDRESS,prefix|REGISTER_IODIR,0xff),
+    #!important! Initialize Ports after bank has been set to 1
+    self.PORTS = { 'A': PortManager(address, 0x00, interrupt['A']), 
+                   'B': PortManager(address, 0x10, interrupt['B'])}
 
-          ## WRITE Register configure Interrupt mode to interrupt on pin change (INTCON)
-          #self.BUS.write_byte_data(chip,bank|self.REGISTER_INTCON, 0x00)
-          # WRITE Register configure Interrupt mode to compare on Value(INTCON)
-          i2c.writing_bytes(self.ADDRESS,prefix|REGISTER_INTCON, 0xff),
-          # WRITE Register set compare Value 
-          i2c.writing_bytes(self.ADDRESS,prefix|REGISTER_DEFVAL, 0xff),
-          # WRITE Register activate internal pullups
-          i2c.writing_bytes(self.ADDRESS,prefix|REGISTER_GPPU, 0xff),
-          # WRITE Register Interrupt activate (GPINTEN)
-          i2c.writing_bytes(self.ADDRESS,prefix|REGISTER_GPINTEN,0xff),
-        )
+
   def activate_mirror(self):
     # Set MIRROR = 1 for INTA and INTB OR'd (IOCON register)
     self.set_config(self.IOCON['MIRROR'])
