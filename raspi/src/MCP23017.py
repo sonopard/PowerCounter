@@ -40,7 +40,7 @@ REGISTER_OLAT = 0X0A
 class PortManager:
 
   state = [0,0,0,0,0,0,0,0]
-  callback = None
+  external_callback = None
 
   def __init__(self, address, prefix):
     self.lock = Lock()
@@ -73,7 +73,7 @@ class PortManager:
 
   def set_callback(self, callback):
     log.debug("Set callback "+str(callback))
-    self.callback = callback
+    self.external_callback = callback
 
   def (self, channel):
     log.debug('This is a edge event callback function!')
@@ -110,7 +110,7 @@ class PortManager:
 
     #call callback after lock release
     log.info("Sending changes 0b{0:b} to callback method".format(changes))
-    self.callback(changes)
+    self.external_callback(changes)
 
 class MCP23017:
   ADDRESS = 0x21
