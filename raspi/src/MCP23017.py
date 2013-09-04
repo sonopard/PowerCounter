@@ -39,7 +39,7 @@ REGISTER_OLAT = 0X0A
 
 class PortManager:
 
-  state = [0,0,0,0,0,0,0,0]
+  state = 0b00000000
   external_callback = None
 
   def __init__(self, address, prefix):
@@ -70,6 +70,12 @@ class PortManager:
       # WRITE Register Interrupt activate (GPINTEN)
       i2c.writing_bytes(address,prefix|REGISTER_GPINTEN,0xff),
     )
+
+    self.state = BUS.transaction(
+      #Set port to input pin
+      i2c.writing_bytes(address,prefix|REGISTER_GPIO),
+      i2c.reading(address, 1))[0][0]
+    log.debug("Initial state of port is 0b{0:b}".format(self.state))
 
   def set_callback(self, callback):
     log.debug("Set callback "+str(callback))
