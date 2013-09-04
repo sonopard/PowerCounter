@@ -83,10 +83,8 @@ class PortManager:
 
   def callback(self, channel):
     log.debug('This is a edge event callback function!')
-    log.debug('Edge detected on channel %s'%channel)
-    log.debug('This is run in a different thread to your main program')
 
-    log.info("Interrupt detected on address 0x{0:x} with prefix 0x{1:x}".format(self.address, self.prefix))
+    log.info("Interrupt detected on address 0x{0:x} with prefix 0x{1:x}; channel {2}".format(self.address, self.prefix, channel))
     self.lock.acquire()
     log.debug("Lock aquired!")
     log.debug("Before State is 0b{0:b}".format(self.state))
@@ -101,7 +99,7 @@ class PortManager:
 
     intf = erg[0][0]
     log.debug("INTF was 0b{0:b}".format(intf))
-    gpio = erg[0][1]
+    gpio = erg[1][0]
     log.debug("GPIO was 0b{0:b}".format(gpio))
     current = intf | gpio
     
