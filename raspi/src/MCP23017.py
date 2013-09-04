@@ -121,8 +121,8 @@ class MCP23017:
       i2c.writing_bytes(self.ADDRESS,0x0A, self.IOCON['BANK']))
 
     #!important! Initialize Ports after bank has been set to 1
-    self.PORTS = { 'A': PortManager(address, 0x00, interrupt['A']), 
-                   'B': PortManager(address, 0x10, interrupt['B'])}
+    self.PORTS = { 'A': PortManager(address, 0x00, interrupts['A']), 
+                   'B': PortManager(address, 0x10, interrupts['B'])}
 
 
   def activate_mirror(self):
