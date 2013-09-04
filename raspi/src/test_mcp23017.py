@@ -8,9 +8,8 @@ log = logging.getLogger("Test.MCP23017")
 class ChipTest(unittest.TestCase):
   chip1 = MCP23017.MCP23017(0x20, {'A': 17})#, 'B': 0x00})
   chip2 = MCP23017.MCP23017(0x21, {'A': 27})#, 'B': 0x00})
-  def test_enable_interrupts(self):
-    self.chip1.activate_interrupts()
-    self.chip1.activate_mirror()
+  def test_test_set_config(self):
+    self.chip1.set_config(self.chip1.IOCON['MIRROR'])
 
   def test_read_registers_bank_set(self):
     self.chip1.set_config(self.chip1.IOCON['BANK'])
