@@ -129,7 +129,7 @@ class MCP23017:
     self.INTERRUPTS = interrupts
     for name, gpio_pin in self.INTERRUPTS.items():
       log.debug("Initialize Interrupt "+name)
-      GPIO.setup(gpio_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+      GPIO.setup(gpio_pin, GPIO.IN, pull_up_down=GPIO.PUD_OFF)
 
     #Set BANK = 1 for easier Addressing of banks (IOCON register)
     #EVERYTHING else goes to zero
