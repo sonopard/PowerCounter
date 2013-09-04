@@ -75,7 +75,11 @@ class PortManager:
     log.debug("Set callback "+str(callback))
     self.callback = callback
 
-  def callback(self):
+  def (self, channel):
+    log.debug('This is a edge event callback function!')
+    log.debug('Edge detected on channel %s'%channel)
+    log.debug('This is run in a different thread to your main program')
+
     log.info("Interrupt detected on address 0x{0:x} with prefix 0x{1:x}".format(self.address, self.prefix))
     self.lock.acquire()
     log.debug("Lock aquired!")
