@@ -1,5 +1,11 @@
 #!/usr/bin/python3
 import logging
+
+import datetime
+import time
+from threading import Thread
+from queue import Queue, Empty
+
 from PC4004B import PC4004B
 from MCP23017 import MCP23017
 
@@ -34,18 +40,19 @@ chip1 = MCP23017(0x20, {'A': 17})#, 'B': 0x00})
 chip2 = MCP23017(0x21, {'A': 27})#, 'B': 0x00})
 
 def json_tick_consumer():
-  try:
-    tick = ticks_queue.get(block=False)
-    display.send_text("Pin: {0}".format(
-      tick[0]), 2)
-    #      (masked[0].bit_length()-1 if masked[0]>0 else masked[1].bit_length()-1)), 2)
-    display.send_text("Port/Bank: {0}".format(
-      tick[1]), 3)
-    #      0 if masked[0]>0 else 1), 3)
-    display.send_text("Address: {0}".format(
-      tick[2]), 4)
-  except Empty:
-    time.sleep(1)
+  while True:
+    try:
+      tick = ticks_queue.get(block=False)
+      display.send_text("Pin: {0}".format(
+        tick[0]), 2)
+      #      (masked[0].bit_length()-1 if masked[0]>0 else masked[1].bit_length()-1)), 2)
+      display.send_text("Port/Bank: {0}".format(
+        tick[1]), 3)
+      #      0 if masked[0]>0 else 1), 3)
+      display.send_text("Address: {0}".format(
+        tick[2]), 4)
+    except Empty:
+      time.sleep(10)
 
 
 #Simply write a small callback that takes a byte reflecting the ticks on pins
