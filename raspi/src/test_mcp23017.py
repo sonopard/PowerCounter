@@ -12,12 +12,14 @@ class ChipTest(unittest.TestCase):
     self.chip1.activate_interrupts()
     self.chip1.activate_mirror()
 
-  def test_read_registers(self):
-    for i in range(0,0x1A):
+  def test_read_registers_bank_set(self):
+    self.chip1.set_config(self.chip1.IOCON['BANK'])
+    for i in range(0x1B):
       byte = self.chip1.read(i)
+      log.info(byte)
 
-  def test_setup_device(self):
-    self.chip1.unset_config(self.chip1.IOCON['BANK'])
+  def test_unset_config(self):
+    self.chip1.unset_config(self.chip1.IOCON['MIRROR'])
 
 if __name__ == '__main__':
     logging.basicConfig()
