@@ -63,6 +63,8 @@ class PortManager:
       i2c.writing_bytes(address,prefix|REGISTER_INTCON, 0xff),
       # WRITE Register set compare Value 
       i2c.writing_bytes(address,prefix|REGISTER_DEFVAL, 0xff),
+      # reflect opposite polarity of pins in GPIO register
+      i2c.writing_bytes(address,prefix|REGISTER_IPOL, 0xff),
       # WRITE Register activate internal pullups
       i2c.writing_bytes(address,prefix|REGISTER_GPPU, 0xff),
       # WRITE Register Interrupt activate (GPINTEN)
@@ -70,6 +72,7 @@ class PortManager:
     )
 
   def set_callback(self, callback):
+    log.debug("Set callback "+str(callback))
     self.callback = callback
 
   def callback(self):
@@ -115,7 +118,7 @@ class MCP23017:
 
 
   def __init__(self, address, interrupts):
-    log.debug("Initialize MCP23017 on 0x{0:x}".format(address))
+    log.info("Initialize MCP23017 on 0x{0:x}".format(address))
     #self._lock = Lock()
     self.ADDRESS = address
     self.INTERRUPTS = interrupts
