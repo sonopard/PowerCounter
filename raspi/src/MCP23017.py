@@ -121,8 +121,8 @@ class MCP23017:
       i2c.writing_bytes(self.ADDRESS,0x0A, self.IOCON['BANK']))
 
     #!important! Initialize Ports after bank has been set to 1
-    self.PORTS = { 'A': PortManager(address, 0x00, interrupts['A']), 
-                   'B': PortManager(address, 0x10, interrupts['B'])}
+    self.PORTS = { 'A': PortManager(address, 0x00), 
+                   'B': PortManager(address, 0x10)}
 
 
   def activate_mirror(self):
@@ -151,7 +151,8 @@ class MCP23017:
       log.debug("IOCON after 0b{0:b}".format(iocon[0][0] & ~ config))
 
   def set_interrupt_handler(self, callback_method):
-    for name, port_manager in self.PORTS.items():
+    for name, gpio_pin in self.INTERRUPTS.items():
+      port_manager = self.PORTS[name]
       port_manager.set_callback(callback_method)
       GPIO.add_event_detect(gpio_pin, GPIO.FALLING, callback = port_manager.callback)
 
