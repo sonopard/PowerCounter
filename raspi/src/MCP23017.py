@@ -171,7 +171,7 @@ class MCP23017:
       log.info("Add callback to GPIO {0} (Interrupt {1}) on address 0x{2:x}".format(gpio_pin,name, self.ADDRESS))
       port_manager = self.PORTS[name]
       port_manager.set_callback(callback_method)
-      GPIO.add_event_detect(gpio_pin, GPIO.FALLING, callback = port_manager.callback)
+      GPIO.add_event_detect(gpio_pin, GPIO.RISING, callback = port_manager.callback)
 
 
   def read(self, register):
