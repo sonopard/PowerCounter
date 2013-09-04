@@ -38,14 +38,15 @@ class PortManager:
   state = [0,0,0,0,0,0,0,0]
   callback = None
 
-  def __init__(self, address, prefix, callback):
+  def __init__(self, address, prefix):
     self.lock = Lock()
     self.address = address
     self.prefix = prefix
+
+  def set_callback(self, callback):
     self.callback = callback
 
-
-  def callback():
+  def callback(self):
     log.info("Interrupt detected on address 0x{0:x} with prefix 0x{1:x}".format(self.address, self.prefix))
     self.lock.acquire()
     log.debug("Lock aquired!")
@@ -70,6 +71,7 @@ class PortManager:
     changes = ~state & current
     state = current
     log.debug("After State is 0b{0:b}".format(state))
+
     self.lock.release()
     log.debug("Lock released!")
 
@@ -79,7 +81,7 @@ class PortManager:
 
 class MCP23017:
   ADDRESS = 0x21
-  PORTS = {0:0x00, 1:0x10}
+  PORTS = {}
   INTERRUPTS = None
 
 
@@ -93,6 +95,8 @@ class MCP23017:
     #self._lock = Lock()
     self.ADDRESS = address
     self.INTERRUPTS = interrupts
+    self.PORTS = { 'A': PortManager(address, 0x00, interrupt['A']), 
+                   'B': PortManager(address, 0x10, interrupt['B'])}
     #Set BANK = 1 for easier Addressing of banks (IOCON register)
     #EVERYTHING else goes to zero
     BUS.transaction( 
@@ -105,7 +109,7 @@ class MCP23017:
    - connects to ground if power meter closes circuit
   '''
   def activate_interrupts(self):
-      for name, prefix in self.PORTS.items():
+      for name, port in self.PORTS.items():
         log.info("Configuring port 0x{0:x}".format(prefix))
         BUS.transaction(
           #Set port to input pin
@@ -147,9 +151,9 @@ class MCP23017:
               i2c.writing_bytes(self.ADDRESS, REGISTER_IOCON, iocon[0][0] & ~ config))
       log.debug("IOCON after 0b{0:b}".format(iocon[0][0] & ~ config))
 
-  def add_interrupt_handler(self, callback_method):
-    for name, prefix in self.PORTS.items():
-      port_manager = PortManager(self.ADDRESS, prefix, callback_method)
+  def set_interrupt_handler(self, callback_method):
+    for name, port_manager in self.PORTS.items():
+      port_manager.set_callback(callback_method)
       GPIO.add_event_detect(gpio_pin, GPIO.FALLING, callback = port_manager.callback)
 
 
