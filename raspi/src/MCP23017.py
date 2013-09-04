@@ -18,36 +18,71 @@ import logging
 log = logging.getLogger("MCP23017")
 BUS = i2c.I2CMaster()
 
-class The_Callback:
-  lock = Lock()
-  def __init__(self, prefix, callback):
-    GPIO.add_event_detect(gpio_pin, GPIO.FALLING, callback = self.the_callback(callback))
 
-  def the_callback(callback):
-    lock.acquire()
-    #READ INTF TO FIND OUT INITIATING PIN
-    #READ GPIO TO GET CURRENTLY ACTIVATED PINS
-    #SOMEHOW TAKE A INTERNAL STATE
-    #CALL CALLBACK WITH STATE /CHANGES
-    callback()
-    lock.release()
+# Register Mapping for Bank=1 mode
+REGISTER_IODIR = 0X00
+REGISTER_IPOL = 0X01
+REGISTER_GPINTEN = 0X02
+REGISTER_DEFVAL = 0X03
+REGISTER_INTCON = 0X04
+REGISTER_IOCON = 0X05
+REGISTER_GPPU = 0X06
+REGISTER_INTF = 0X07
+REGISTER_INTCAP = 0X08
+REGISTER_GPIO = 0X09
+REGISTER_OLAT = 0X0A
+
+
+class PortManager:
+
+  state = [0,0,0,0,0,0,0,0]
+  callback = None
+
+  def __init__(self, address, prefix, callback):
+    self.lock = Lock()
+    self.address = address
+    self.prefix = prefix
+    self.callback = callback
+
+
+  def callback():
+    log.info("Interrupt detected on address 0x{0:x} with prefix 0x{1:x}".format(self.address, self.prefix))
+    self.lock.acquire()
+    log.debug("Lock aquired!")
+    log.debug("Before State is 0b{0:b}".format(state))
+    erg = BUS.transaction(
+      #READ INTF TO FIND OUT INITIATING PIN
+      i2c.writing_bytes(self.address,self.prefix|REGISTER_INTF),
+      i2c.reading(self.address,1),
+      #READ GPIO TO GET CURRENTLY ACTIVATED PINS | RESETS THE INTERRUPT
+      i2c.writing_bytes(self.address,self.prefix|REGISTER_GPIO),
+      i2c.reading(self.address,1),
+    )
+
+    intf = erg[0][0]
+    log.debug("INTF was 0b{0:b}".format(intf))
+    gpio = erg[0][1]
+    log.debug("GPIO was 0b{0:b}".format(gpio))
+    current = intf | gpio
+    
+        
+    #calculate only changes
+    changes = ~state & current
+    state = current
+    log.debug("After State is 0b{0:b}".format(state))
+    self.lock.release()
+    log.debug("Lock released!")
+
+    #call callback after lock release
+    log.info("Sending changes 0b{0:b} to callback method".format(state))
+    self.callback(changes)
+
 class MCP23017:
   ADDRESS = 0x21
   PORTS = {0:0x00, 1:0x10}
   INTERRUPTS = None
 
-  # Register Mapping for Bank=1 mode
-  REGISTER_IODIR = 0X00
-  REGISTER_IPOL = 0X01
-  REGISTER_GPINTEN = 0X02
-  REGISTER_DEFVAL = 0X03
-  REGISTER_INTCON = 0X04
-  REGISTER_IOCON = 0X05
-  REGISTER_GPPU = 0X06
-  REGISTER_INTF = 0X07
-  REGISTER_INTCAP = 0X08
-  REGISTER_GPIO = 0X09
-  REGISTER_OLAT = 0X0A
+
 
 
   # mapping of pins inside icocon register
@@ -74,18 +109,18 @@ class MCP23017:
         log.info("Configuring port 0x{0:x}".format(prefix))
         BUS.transaction(
           #Set port to input pin
-          i2c.writing_bytes(self.ADDRESS,prefix|self.REGISTER_IODIR,0xff),
+          i2c.writing_bytes(self.ADDRESS,prefix|REGISTER_IODIR,0xff),
 
           ## WRITE Register configure Interrupt mode to interrupt on pin change (INTCON)
           #self.BUS.write_byte_data(chip,bank|self.REGISTER_INTCON, 0x00)
           # WRITE Register configure Interrupt mode to compare on Value(INTCON)
-          i2c.writing_bytes(self.ADDRESS,prefix|self.REGISTER_INTCON, 0xff),
+          i2c.writing_bytes(self.ADDRESS,prefix|REGISTER_INTCON, 0xff),
           # WRITE Register set compare Value 
-          i2c.writing_bytes(self.ADDRESS,prefix|self.REGISTER_DEFVAL, 0xff),
+          i2c.writing_bytes(self.ADDRESS,prefix|REGISTER_DEFVAL, 0xff),
           # WRITE Register activate internal pullups
-          i2c.writing_bytes(self.ADDRESS,prefix|self.REGISTER_GPPU, 0xff),
+          i2c.writing_bytes(self.ADDRESS,prefix|REGISTER_GPPU, 0xff),
           # WRITE Register Interrupt activate (GPINTEN)
-          i2c.writing_bytes(self.ADDRESS,prefix|self.REGISTER_GPINTEN,0xff),
+          i2c.writing_bytes(self.ADDRESS,prefix|REGISTER_GPINTEN,0xff),
         )
   def activate_mirror(self):
     # Set MIRROR = 1 for INTA and INTB OR'd (IOCON register)
@@ -95,26 +130,27 @@ class MCP23017:
   def set_config(self, config):
       log.info("Register Access IOCON, adding: 0b{0:b}".format(config))
       iocon = BUS.transaction(
-              i2c.writing_bytes(self.ADDRESS, self.REGISTER_IOCON),
+              i2c.writing_bytes(self.ADDRESS, REGISTER_IOCON),
               i2c.reading(self.ADDRESS, 1))
       log.debug("IOCON before 0b{0:b}".format(iocon[0][0]))
       BUS.transaction(
-              i2c.writing_bytes(self.ADDRESS, self.REGISTER_IOCON, iocon[0][0] | config))
+              i2c.writing_bytes(self.ADDRESS, REGISTER_IOCON, iocon[0][0] | config))
       log.debug("IOCON after 0b{0:b}".format(iocon[0][0] | config))
 
   def unset_config(self, config):
       log.info("Register Access IOCON, removing: 0b{0:b}".format(config))
       iocon = BUS.transaction(
-              i2c.writing_bytes(self.ADDRESS, self.REGISTER_IOCON),
+              i2c.writing_bytes(self.ADDRESS, REGISTER_IOCON),
               i2c.reading(self.ADDRESS, 1))
       log.debug("IOCON before 0b{0:b}".format(iocon[0][0]))
       BUS.transaction(
-              i2c.writing_bytes(self.ADDRESS, self.REGISTER_IOCON, iocon[0][0] & ~ config))
+              i2c.writing_bytes(self.ADDRESS, REGISTER_IOCON, iocon[0][0] & ~ config))
       log.debug("IOCON after 0b{0:b}".format(iocon[0][0] & ~ config))
 
   def add_interrupt_handler(self, callback_method):
     for name, prefix in self.PORTS.items():
-      the_callback = The_Callback(prefix, callback_method)
+      port_manager = PortManager(self.ADDRESS, prefix, callback_method)
+      GPIO.add_event_detect(gpio_pin, GPIO.FALLING, callback = port_manager.callback)
 
 
   def read(self, register):

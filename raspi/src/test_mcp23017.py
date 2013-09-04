@@ -21,6 +21,12 @@ class ChipTest(unittest.TestCase):
   def test_unset_config(self):
     self.chip1.unset_config(self.chip1.IOCON['MIRROR'])
 
+  def test_set_callback(self):
+    def myCallback(ticklist): #one byte, the ports where ticks have been detectet are set
+      log.info(ticklist)
+    self.chip1.add_interrupt_handler(myCallback)
+      
+
 if __name__ == '__main__':
     logging.basicConfig()
     logging.getLogger( "MCP23017" ).setLevel( logging.DEBUG )
