@@ -83,7 +83,7 @@ class PortManager:
     log.info("Interrupt detected on address 0x{0:x} with prefix 0x{1:x}".format(self.address, self.prefix))
     self.lock.acquire()
     log.debug("Lock aquired!")
-    log.debug("Before State is 0b{0:b}".format(state))
+    log.debug("Before State is 0b{0:b}".format(self.state))
     erg = BUS.transaction(
       #READ INTF TO FIND OUT INITIATING PIN
       i2c.writing_bytes(self.address,self.prefix|REGISTER_INTF),
@@ -101,15 +101,15 @@ class PortManager:
     
         
     #calculate only changes
-    changes = ~state & current
-    state = current
-    log.debug("After State is 0b{0:b}".format(state))
+    changes = ~self.state & current
+    self.state = current
+    log.debug("After State is 0b{0:b}".format(self.state))
 
     self.lock.release()
     log.debug("Lock released!")
 
     #call callback after lock release
-    log.info("Sending changes 0b{0:b} to callback method".format(state))
+    log.info("Sending changes 0b{0:b} to callback method".format(changes))
     self.callback(changes)
 
 class MCP23017:
