@@ -1,8 +1,9 @@
 #!/usr/bin/python3
 from MCP23017 import MCP23017
 import logging
-
+logging.basicConfig()
 logging.getLogger( "MCP23017" ).setLevel( logging.DEBUG )
+
 chips = [MCP23017(0x20, {'A': 17}),
           MCP23017(0x21, {'A': 27})]
 

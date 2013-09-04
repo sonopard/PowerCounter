@@ -169,7 +169,7 @@ class MCP23017:
     byte = BUS.transaction(
               i2c.writing_bytes(self.ADDRESS, register),
               i2c.reading(self.ADDRESS, 1))
-    log.debug("Reading register 0x{0:x} value 0b{1:b}".format(register, byte[0][0]))
+    log.debug("Reading from address 0x{0:x} register 0x{1:x} value 0b{2:b}".format(self.ADDRESS, register, byte[0][0]))
     return byte[0][0]
 
 '''
