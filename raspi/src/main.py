@@ -67,7 +67,11 @@ def myCallback(ticklist):
     int(unix_time_millis(datetime.datetime.utcnow()))))
 
 chip1.set_interrupt_handler(myCallback)
+chip1.read(0x09)
+chip1.read(0x19)
 chip2.set_interrupt_handler(myCallback)
+chip2.read(0x09)
+chip2.read(0x19)
 
 thread_consumer = Thread(target = json_tick_consumer)
 thread_consumer.start()
