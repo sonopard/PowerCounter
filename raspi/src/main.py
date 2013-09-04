@@ -7,7 +7,7 @@ from threading import Thread
 from queue import Queue, Empty
 
 from PC4004B import PC4004B
-from MCP23017 import MCP23017
+from MCP23017 import MCP23017, IOCON
 
 # INITIALIZE DISPLAY
 display = PC4004B()
@@ -66,11 +66,11 @@ def myCallback(ticklist):
     0x20, # yields the i2c address of the controller associated with the port
     int(unix_time_millis(datetime.datetime.utcnow())))
 
-chip1.set_config(MCP23017.IOCON['ODR'])
+chip1.set_config(IOCON['ODR'])
 chip1.set_interrupt_handler(myCallback)
 chip1.read(0x09)
 chip1.read(0x19)
-chip2.set_config(MCP23017.IOCON['ODR'])
+chip2.set_config(IOCON['ODR'])
 chip2.set_interrupt_handler(myCallback)
 chip2.read(0x09)
 chip2.read(0x19)

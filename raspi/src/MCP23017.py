@@ -4,7 +4,7 @@ import quick2wire.i2c as i2c
 import re
 import logging
 from threading import Lock
-import RPi.GPIO as GPIO
+from RPi import GPIO
 
 
 # support for the "PC4004B" displays floating around the lab. 
