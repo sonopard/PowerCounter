@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import logging
-import MCP23017
-import PC4004B
+from PC4004B import PC4004B
+from MCP23017 import MCP23017
 
 # INITIALIZE DISPLAY
 display = PC4004B()
@@ -30,8 +30,8 @@ logging.getLogger( "MCP23017" ).setLevel( logging.DEBUG )
 logging.getLogger( "PC4004B" ).setLevel( logging.DEBUG )
 
 #SET UP SHIELD
-chip1 = MCP23017.MCP23017(0x20, {'A': 17})#, 'B': 0x00})
-chip2 = MCP23017.MCP23017(0x21, {'A': 27})#, 'B': 0x00})
+chip1 = MCP23017(0x20, {'A': 17})#, 'B': 0x00})
+chip2 = MCP23017(0x21, {'A': 27})#, 'B': 0x00})
 
 def json_tick_consumer():
   try:

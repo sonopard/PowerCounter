@@ -1,6 +1,7 @@
 import time
 import RPi.GPIO as GPIO
 from threading import Lock
+import logging
 
 # support for the "PC4004B" displays floating around the lab. 
 # there is no datasheet - althought the PFY claims to have one
