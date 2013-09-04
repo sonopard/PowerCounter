@@ -46,7 +46,7 @@ class PortManager:
     self.lock = Lock()
     self.address = address
     self.prefix = prefix
-    log.info("Configuring port 0x{0:x}".format(prefix))
+    log.debug("Configuring port 0x{0:x}".format(prefix))
     '''
     This method basically sets up the chip for further operations and 
     defines the electrical wiring as followes:
@@ -115,6 +115,7 @@ class MCP23017:
 
 
   def __init__(self, address, interrupts):
+    log.debug("Initialize MCP23017 on 0x{0:x}".format(address))
     #self._lock = Lock()
     self.ADDRESS = address
     self.INTERRUPTS = interrupts
