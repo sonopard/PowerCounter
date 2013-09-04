@@ -21,6 +21,7 @@ import RPi.GPIO as GPIO
 log = logging.getLogger("MCP23017")
 BUS = i2c.I2CMaster()
 
+GPIO.setmode(GPIO.BCM)
 
 # Register Mapping for Bank=1 mode
 REGISTER_IODIR = 0X00
