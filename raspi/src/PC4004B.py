@@ -12,6 +12,7 @@ from threading import Lock
 # usage
 # display = PC4004B()
 # display.send_text("Up up in the butt", 1, 2) # line, chip - this will display the text in the 3rd line
+log = logging.getLogger("PC4004B")
 
 class PC4004B:
   # lines
@@ -48,7 +49,7 @@ class PC4004B:
   This method displays a text of max 40 chars length
   '''
   def send_text(self, text, line):
-    print("display: {0}: {1}".format(line, text))   
+    log.debug("display: {0}: {1}".format(line, text))   
     if(len(text) > self.DISPLAY_WIDTH):
       raise ValueError("text can be max. 40 characters long")
     # Calculate Chip parameters
@@ -66,6 +67,7 @@ class PC4004B:
     GPIO.cleanup()
 
   def display_init(self, enable):
+    log.debug("Initializing display")
     # TODO figure out what this actually does
     self.lcd_byte(0b00110011,self.DISPLAY_CMD,enable) # cursor return wtf
     self.lcd_byte(0b00110010,self.DISPLAY_CMD,enable) # wtf
