@@ -61,11 +61,14 @@ def json_tick_consumer():
 def myCallback(ticklist): 
   log.info(ticklist)
   if ticklist > 0:
-    ticks_queue.put((
-      ticklist, # yields the pin number
-      0, # yields the port number associated with the pin which for some reason is called bank
-      0x20, # yields the i2c address of the controller associated with the port
-      int(unix_time_millis(datetime.datetime.utcnow()))))
+    for i in range(8):
+      if ticklist & (1 << i):
+        log.debug("Adding Tick to Queue (Pin "+str(i)+")")
+        ticks_queue.put((
+          i, # yields the pin number
+          0, # yields the port number associated with the pin which for some reason is called bank
+          0x20, # yields the i2c address of the controller associated with the port
+          int(unix_time_millis(datetime.datetime.utcnow()))))
 
 chip1.initialize_ports()
 chip1.set_config(IOCON['INTPOL'])
