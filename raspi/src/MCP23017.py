@@ -79,8 +79,8 @@ class PortManager:
     log.debug("Set callback "+str(callback))
     self.state = BUS.transaction(
       #Set port to input pin
-      i2c.writing_bytes(address,prefix|REGISTER_GPIO),
-      i2c.reading(address, 1))[0][0]
+      i2c.writing_bytes(self.address,prefix|REGISTER_GPIO),
+      i2c.reading(self.address, 1))[0][0]
     log.debug("Re-Setting initial state of port is now 0b{0:b}".format(self.state))
     self.external_callback = callback
 
