@@ -100,13 +100,13 @@ class PortManager:
 
     intf = erg[0][0]
     log.debug("INTF was 0b{0:b}".format(intf))
-    gpio = erg[1][0] ^ 1
+    gpio = (erg[1][0] ^ 0b11111111)
     log.debug("GPIO was 0b{0:b}".format(gpio))
     current = intf | gpio
     
         
     #calculate only changes
-    changes = (self.state ^ 1) & current
+    changes = (self.state ^ 0b11111111) & current
     self.state = current
     log.debug("After State is 0b{0:b}".format(self.state))
 
