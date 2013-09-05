@@ -107,7 +107,9 @@ class PortManager:
         
     #calculate only changes
     changes = (self.state ^ 0b11111111) & current
-    self.state = current
+
+    #set new state
+    self.state = gpio
     log.debug("After State is 0b{0:b}".format(self.state))
 
     self.lock.release()
