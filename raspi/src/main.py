@@ -38,8 +38,8 @@ log = logging.getLogger("PowerCounter")
 log.setLevel(logging.DEBUG)
 
 #SET UP SHIELD
-chip1 = MCP23017(0x20, {'A':17})#, 'B': 0x00})
-#chip2 = MCP23017(0x21, {'A': 27})#, 'B': 0x00})
+chip1 = MCP23017(0x20, {'A':4, 'B':17})
+chip2 = MCP23017(0x21, {'A': 22, 'B':27})
 
 def json_tick_consumer():
   while True:
