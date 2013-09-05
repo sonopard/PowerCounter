@@ -74,14 +74,14 @@ class PortManager:
       i2c.writing_bytes(address,prefix|REGISTER_GPINTEN,0xff),
     )
 
+
+  def set_callback(self, callback):
+    log.debug("Set callback "+str(callback))
     self.state = BUS.transaction(
       #Set port to input pin
       i2c.writing_bytes(address,prefix|REGISTER_GPIO),
       i2c.reading(address, 1))[0][0]
-    log.debug("Initial state of port is 0b{0:b}".format(self.state))
-
-  def set_callback(self, callback):
-    log.debug("Set callback "+str(callback))
+    log.debug("Re-Setting initial state of port is now 0b{0:b}".format(self.state))
     self.external_callback = callback
 
   def callback(self, channel):
@@ -129,13 +129,15 @@ class MCP23017:
     self.INTERRUPTS = interrupts
     for name, gpio_pin in self.INTERRUPTS.items():
       log.debug("Initialize Interrupt "+name)
-      GPIO.setup(gpio_pin, GPIO.IN, pull_up_down=GPIO.PUD_OFF)
+      GPIO.setup(gpio_pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
     #Set BANK = 1 for easier Addressing of banks (IOCON register)
     #EVERYTHING else goes to zero
     BUS.transaction( 
       i2c.writing_bytes(self.ADDRESS,0x0A, IOCON['BANK']))
 
+  #initialize ports and set them for interrupts
+  def initialize_ports(self)
     #!important! Initialize Ports after bank has been set to 1
     self.PORTS = { 'A': PortManager(address, 0x00), 
                    'B': PortManager(address, 0x10)}

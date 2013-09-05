@@ -66,8 +66,9 @@ def myCallback(ticklist):
     0x20, # yields the i2c address of the controller associated with the port
     int(unix_time_millis(datetime.datetime.utcnow()))))
 
+chip1.initialize_ports()
 chip1.set_config(IOCON['INTPOL'])
-chip1.unset_config(IOCON['ODR'])
+#chip1.unset_config(IOCON['ODR'])
 chip1.set_interrupt_handler(myCallback)
 chip1.read(0x09)
 chip1.read(0x19)
