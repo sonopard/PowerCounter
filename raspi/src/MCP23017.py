@@ -128,7 +128,7 @@ class MCP23017:
     self.ADDRESS = address
     self.INTERRUPTS = interrupts
     for name, gpio_pin in self.INTERRUPTS.items():
-      log.debug("Initialize Interrupt "+name)
+      log.debug("Initialize Interrupt "+name+" for GPIO pin "+ str(gpio_pin))
       GPIO.setup(gpio_pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
     #Set BANK = 1 for easier Addressing of banks (IOCON register)
@@ -137,10 +137,10 @@ class MCP23017:
       i2c.writing_bytes(self.ADDRESS,0x0A, IOCON['BANK']))
 
   #initialize ports and set them for interrupts
-  def initialize_ports(self)
+  def initialize_ports(self):
     #!important! Initialize Ports after bank has been set to 1
-    self.PORTS = { 'A': PortManager(address, 0x00), 
-                   'B': PortManager(address, 0x10)}
+    self.PORTS = { 'A': PortManager(self.ADDRESS, 0x00), 
+                   'B': PortManager(self.ADDRESS, 0x10)}
 
 
   def activate_mirror(self):
