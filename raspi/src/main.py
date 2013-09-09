@@ -75,8 +75,8 @@ chip1.set_config(IOCON['INTPOL'])
 #chip1.unset_config(IOCON['ODR'])
 chip1.set_interrupt_handler(myCallback)
 
-chip1.initialize_ports()
-chip1.set_config(IOCON['INTPOL'])
+chip2.initialize_ports()
+chip2.set_config(IOCON['INTPOL'])
 #chip2.unset_config(IOCON['ODR'])
 chip2.set_interrupt_handler(myCallback)
 
