@@ -45,7 +45,7 @@ class PortManager:
   state = [0b00000000, 0b00000000]
   external_callback = None
 
-  def __init__(self, address, prefix):
+  def __init__(self, address):
     self.lock = Lock()
     self.address = address
     log.debug("Initialize port 0x{0:x}".format(address))
@@ -57,20 +57,20 @@ class PortManager:
     '''
     BUS.transaction(
       #Set port to input pin
-      i2c.writing_bytes(address,prefix|REGISTER_IODIR,0xff),
+      i2c.writing_bytes(address,REGISTER_IODIR,0xff, 0xff),
 
       ## WRITE Register configure Interrupt mode to interrupt on pin change (INTCON)
       #self.BUS.write_byte_data(chip,bank|self.REGISTER_INTCON, 0x00)
       # WRITE Register configure Interrupt mode to compare on Value(INTCON)
-      i2c.writing_bytes(address,prefix|REGISTER_INTCON, 0xff),
+      i2c.writing_bytes(address,REGISTER_INTCON, 0xff, 0xff),
       # WRITE Register set compare Value 
-      i2c.writing_bytes(address,prefix|REGISTER_DEFVAL, 0xff),
+      i2c.writing_bytes(address,REGISTER_DEFVAL, 0xff, 0xff),
       # reflect opposite polarity of pins in GPIO register
-      i2c.writing_bytes(address,prefix|REGISTER_IPOL, 0x00),
+      i2c.writing_bytes(address,REGISTER_IPOL, 0x00, 0x00),
       # WRITE Register activate internal pullups
-      i2c.writing_bytes(address,prefix|REGISTER_GPPU, 0xff),
-      # WRITE Register Interrupt activate (GPINTEN)
-      i2c.writing_bytes(address,prefix|REGISTER_GPINTEN,0xff),
+      i2c.writing_bytes(address,REGISTER_GPPU, 0xff, 0xff),
+      # WRITE Register Interruptactivate (GPINTEN)
+      i2c.writing_bytes(address,REGISTER_GPINTEN,0xff, 0xff),
     )
 
 
@@ -78,7 +78,7 @@ class PortManager:
     log.debug("Set callback "+str(callback))
     state = BUS.transaction(
       #Set port to input pin
-      i2c.writing_bytes(self.address,self.prefix|REGISTER_GPIO),
+      i2c.writing_bytes(self.address,REGISTER_GPIO),
       i2c.reading(self.address, 2))
     self.state[0] = state[0][0] ^ 0b11111111
     self.state[1] = state[0][1] ^ 0b11111111
@@ -86,16 +86,16 @@ class PortManager:
     self.external_callback = callback
 
   def callback(self, channel):
-    log.info("Interrupt detected on address 0x{0:x} with prefix 0x{1:x}; channel {2}".format(self.address, self.prefix, channel))
+    log.info("Interrupt detected on address 0x{0:x} with prefix channel {1}".format(self.address, channel))
     self.lock.acquire()
     log.debug("Lock aquired!")
     log.debug("Before State is 0b{0:b}".format(self.state))
     erg = BUS.transaction(
       #READ INTF TO FIND OUT INITIATING PIN
-      i2c.writing_bytes(self.address,self.prefix|REGISTER_INTF),
+      i2c.writing_bytes(self.address,REGISTER_INTF),
       i2c.reading(self.address,2),
       #READ GPIO TO GET CURRENTLY ACTIVATED PINS | RESETS THE INTERRUPT
-      i2c.writing_bytes(self.address,self.prefix|REGISTER_GPIO),
+      i2c.writing_bytes(self.address,REGISTER_GPIO),
       i2c.reading(self.address,2),
     )
 
@@ -121,11 +121,11 @@ class PortManager:
 
     #call callback after lock release
     log.info("Sending changes 0b{0:b} to callback method".format(changes))
-    self.external_callback(changes[0], self.prefix, self.address)
+    self.external_callback(changes[0], self.address)
 
 class MCP23017:
   ADDRESS = 0x21
-  PORT = NONE
+  PORT = None
   INTERRUPT = None
 
   def __init__(self, address, interrupt):

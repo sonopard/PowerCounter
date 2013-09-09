@@ -38,8 +38,8 @@ log = logging.getLogger("PowerCounter")
 log.setLevel(logging.DEBUG)
 
 #SET UP SHIELD
-chip1 = MCP23017(0x20, {'A':4, 'B':17})
-chip2 = MCP23017(0x21, {'A':22, 'B':27})
+chip1 = MCP23017(0x20, 4)
+chip2 = MCP23017(0x21, 22)
 
 def json_tick_consumer():
   while True:
@@ -77,6 +77,7 @@ chip1.set_interrupt_handler(myCallback)
 
 chip2.initialize_ports()
 chip2.set_config(IOCON['INTPOL'])
+chip2.set_config(IOCON['MIRROR'])
 #chip2.unset_config(IOCON['ODR'])
 chip2.set_interrupt_handler(myCallback)
 
