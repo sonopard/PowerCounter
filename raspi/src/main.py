@@ -54,7 +54,7 @@ def json_tick_consumer():
       display.send_text("Address: {0}".format(
         tick[2]), 4)
     except Empty:
-      time.sleep(10)
+      time.sleep(1)
 
 
 #Simply write a small callback that takes a byte reflecting the ticks on pins
