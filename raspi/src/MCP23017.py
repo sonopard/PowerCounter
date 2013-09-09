@@ -167,8 +167,8 @@ class MCP23017:
       log.debug("IOCON after 0b{0:b}".format(iocon[0][0] & ~ config))
 
   def set_interrupt_handler(self, callback_method):
-    log.info("Add callback to GPIO {0} on address 0x{2:x}".format(self.INTERRUPT, self.ADDRESS))
-    port_manager = self.PORTS[name]
+    log.info("Add callback to GPIO {0} on address 0x{1:x}".format(self.INTERRUPT, self.ADDRESS))
+    port_manager = self.PORT
     port_manager.set_callback(callback_method)
     GPIO.add_event_detect(self.INTERRUPT, GPIO.RISING, callback = port_manager.callback)
 
