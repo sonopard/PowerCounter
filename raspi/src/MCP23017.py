@@ -117,7 +117,7 @@ class PortManager:
 
     #call callback after lock release
     log.info("Sending changes 0b{0:b} to callback method".format(changes))
-    self.external_callback(changes, self.port, self.address)
+    self.external_callback(changes, self.prefix, self.address)
 
 class MCP23017:
   ADDRESS = 0x21
