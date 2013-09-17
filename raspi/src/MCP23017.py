@@ -148,16 +148,16 @@ class MCP23017:
     self.ADDRESS = address
 
     #Set bank state for easier Addressing of banks (IOCON register)
-    #EVERYTHING else goes to zero
+    #EVERYTHING else goes to zero - some magic to write bit on both settings
     if bank == 1: #assume has been bank=0 before
       BUS.transaction( 
         i2c.writing_bytes(self.ADDRESS,0x14, IOCON['BANK']),
-        i2c.writing_bytes(self.ADDRESS,0x09, IOCON['BANK']))
+        i2c.writing_bytes(self.ADDRESS,0x0A, IOCON['BANK']))
       REGISTER = MAPPING['BANK']
     elif bank == 0:
       BUS.transaction( 
         i2c.writing_bytes(self.ADDRESS,0x14, 0 ),
-        i2c.writing_bytes(self.ADDRESS,0x09, 0 ))
+        i2c.writing_bytes(self.ADDRESS,0x0A, 0 ))
       REGISTER = MAPPING['NOBANK']
 
   def init_interrupts(self, interrupts):
