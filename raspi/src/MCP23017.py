@@ -24,17 +24,35 @@ BUS = i2c.I2CMaster()
 GPIO.setmode(GPIO.BCM)
 
 # Register Mapping for Bank=1 mode
-REGISTER_IODIR = 0X00
-REGISTER_IPOL = 0X01
-REGISTER_GPINTEN = 0X02
-REGISTER_DEFVAL = 0X03
-REGISTER_INTCON = 0X04
-REGISTER_IOCON = 0X05
-REGISTER_GPPU = 0X06
-REGISTER_INTF = 0X07
-REGISTER_INTCAP = 0X08
-REGISTER_GPIO = 0X09
-REGISTER_OLAT = 0X0A
+MAPPING = { 
+  'NOBANK' : {
+    'IODIR': 0X00,
+    'IPOL': 0X02,
+    'GPINTEN': 0X04,
+    'DEFVAL': 0X06,
+    'INTCON': 0X08,
+   'IOCON': 0X0A,
+    'GPPU': 0X0C,
+    'INTF': 0X0E,
+    'INTCAP': 0X10,
+    'GPIO': 0X12,
+    'OLAT': 0X14
+  },
+ 'BANK': {
+    'IODIR': 0X00,
+    'IPOL': 0X01,
+    'GPINTEN': 0X02,
+    'DEFVAL': 0X03,
+    'INTCON': 0X04,
+   'IOCON': 0X05,
+    'GPPU': 0X06,
+    'INTF': 0X07,
+    'INTCAP': 0X08,
+    'GPIO': 0X09,
+    'OLAT': 0X0A
+  }
+}
+REGISTER = None
 
 # mapping of pins inside icocon register
 IOCON = {'BANK':0b10000000, 'MIRROR': 0b01000000, 'DISSLW': 0b00010000, 'HAEN': 0b00001000, 'ODR': 0b00000100, 'INTPOL': 0b00000010}
@@ -58,20 +76,20 @@ class PortManager:
     '''
     BUS.transaction(
       #Set port to input pin
-      i2c.writing_bytes(address,prefix|REGISTER_IODIR,0xff),
+      i2c.writing_bytes(address,prefix|REGISTER['IODIR'],0xff),
 
       ## WRITE Register configure Interrupt mode to interrupt on pin change (INTCON)
       #self.BUS.write_byte_data(chip,bank|self.REGISTER_INTCON, 0x00)
       # WRITE Register configure Interrupt mode to compare on Value(INTCON)
-      i2c.writing_bytes(address,prefix|REGISTER_INTCON, 0xff),
+      i2c.writing_bytes(address,prefix|REGISTER['INTCON'], 0xff),
       # WRITE Register set compare Value 
-      i2c.writing_bytes(address,prefix|REGISTER_DEFVAL, 0xff),
+      i2c.writing_bytes(address,prefix|REGISTER['DEFVAL'], 0xff),
       # reflect opposite polarity of pins in GPIO register
-      i2c.writing_bytes(address,prefix|REGISTER_IPOL, 0x00),
+      i2c.writing_bytes(address,prefix|REGISTER['IPOL'], 0x00),
       # WRITE Register activate internal pullups
-      i2c.writing_bytes(address,prefix|REGISTER_GPPU, 0xff),
+      i2c.writing_bytes(address,prefix|REGISTER['GPPU'], 0xff),
       # WRITE Register Interrupt activate (GPINTEN)
-      i2c.writing_bytes(address,prefix|REGISTER_GPINTEN,0xff),
+      i2c.writing_bytes(address,prefix|REGISTER['GPINTEN'],0xff),
     )
 
 
@@ -79,7 +97,7 @@ class PortManager:
     log.debug("Set callback "+str(callback))
     self.state = BUS.transaction(
       #Set port to input pin
-      i2c.writing_bytes(self.address,self.prefix|REGISTER_GPIO),
+      i2c.writing_bytes(self.address,self.prefix|REGISTER['GPIO']),
       i2c.reading(self.address, 1))[0][0] ^ 0b11111111
     log.debug("Re-Setting initial state of port is now 0b{0:b}".format(self.state))
     self.external_callback = callback
@@ -91,10 +109,10 @@ class PortManager:
     log.debug("Before State is 0b{0:b}".format(self.state))
     erg = BUS.transaction(
       #READ INTF TO FIND OUT INITIATING PIN
-      i2c.writing_bytes(self.address,self.prefix|REGISTER_INTF),
+      i2c.writing_bytes(self.address,self.prefix|REGISTER['INTF']),
       i2c.reading(self.address,1),
       #READ GPIO TO GET CURRENTLY ACTIVATED PINS | RESETS THE INTERRUPT
-      i2c.writing_bytes(self.address,self.prefix|REGISTER_GPIO),
+      i2c.writing_bytes(self.address,self.prefix|REGISTER['GPIO']),
       i2c.reading(self.address,1),
     )
 
@@ -128,11 +146,6 @@ class MCP23017:
     log.info("Initialize MCP23017 on 0x{0:x}".format(address))
     #self._lock = Lock()
     self.ADDRESS = address
-    self.INTERRUPTS = interrupts
-    for name, gpio_pin in self.INTERRUPTS.items():
-      log.debug("Initialize Interrupt "+name+" for GPIO pin "+ str(gpio_pin))
-      GPIO.setup(gpio_pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-
 
     #Set bank state for easier Addressing of banks (IOCON register)
     #EVERYTHING else goes to zero
@@ -147,9 +160,12 @@ class MCP23017:
         i2c.writing_bytes(self.ADDRESS,0x15, 0 ))
       REGISTER = MAPPING['NOBANK']
 
-  def init_interrupts(self, interrupt):
-    self.INTERRUPT = interrupt
-    GPIO.setup(self.INTERRUPT, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+  def init_interrupts(self, interrupts):
+    self.INTERRUPTS = interrupts
+    for name, gpio_pin in self.INTERRUPTS.items():
+      log.debug("Initialize Interrupt "+name+" for GPIO pin "+ str(gpio_pin))
+      GPIO.setup(gpio_pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+
   #initialize ports and set them for interrupts
   def initialize_ports(self):
     #!important! Initialize Ports after bank has been set to 1
