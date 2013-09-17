@@ -31,7 +31,7 @@ MAPPING = {
     'GPINTEN': 0X04,
     'DEFVAL': 0X06,
     'INTCON': 0X08,
-   'IOCON': 0X0A,
+    'IOCON': 0X0A,
     'GPPU': 0X0C,
     'INTF': 0X0E,
     'INTCAP': 0X10,
@@ -63,10 +63,11 @@ class PortManager:
   state = 0b00000000
   external_callback = None
 
-  def __init__(self, address, prefix):
+  def __init__(self, address, prefix, interrupt_pin):
     self.lock = Lock()
     self.address = address
     self.prefix = prefix
+    self.interrupt_pin = interrupt_pin
     log.debug("Initialize port 0x{0:x}".format(prefix))
     '''
     This method basically sets up the chip for further operations and 
@@ -91,6 +92,8 @@ class PortManager:
       # WRITE Register Interrupt activate (GPINTEN)
       i2c.writing_bytes(address,prefix|REGISTER['GPINTEN'],0xff),
     )
+    log.debug("Initialize Interrupt "+name+" for GPIO pin "+ str(interrupt_pin))
+    GPIO.setup(interrupt_pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 
   def set_callback(self, callback):
@@ -160,17 +163,12 @@ class MCP23017:
         i2c.writing_bytes(self.ADDRESS,0x0A, 0 ))
       REGISTER = MAPPING['NOBANK']
 
-  def init_interrupts(self, interrupts):
-    self.INTERRUPTS = interrupts
-    for name, gpio_pin in self.INTERRUPTS.items():
-      log.debug("Initialize Interrupt "+name+" for GPIO pin "+ str(gpio_pin))
-      GPIO.setup(gpio_pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-
   #initialize ports and set them for interrupts
-  def initialize_ports(self):
+  def initialize_ports(self, interrupts):
+
     #!important! Initialize Ports after bank has been set to 1
-    self.PORTS = { 'A': PortManager(self.ADDRESS, 0x00), 
-                   'B': PortManager(self.ADDRESS, 0x10)}
+    self.PORTS = { 'A': PortManager(self.ADDRESS, 0x00, interrupts['A']), 
+                   'B': PortManager(self.ADDRESS, 0x10, interrupts['B'])}
 
 
   def activate_mirror(self):
