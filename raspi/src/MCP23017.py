@@ -152,12 +152,12 @@ class MCP23017:
     if bank == 1: #assume has been bank=0 before
       BUS.transaction( 
         i2c.writing_bytes(self.ADDRESS,0x14, IOCON['BANK']),
-        i2c.writing_bytes(self.ADDRESS,0x15, IOCON['BANK']))
+        i2c.writing_bytes(self.ADDRESS,0x09, IOCON['BANK']))
       REGISTER = MAPPING['BANK']
     elif bank == 0:
       BUS.transaction( 
         i2c.writing_bytes(self.ADDRESS,0x14, 0 ),
-        i2c.writing_bytes(self.ADDRESS,0x15, 0 ))
+        i2c.writing_bytes(self.ADDRESS,0x09, 0 ))
       REGISTER = MAPPING['NOBANK']
 
   def init_interrupts(self, interrupts):
@@ -191,11 +191,11 @@ class MCP23017:
   def unset_config(self, config):
       log.info("Register Access IOCON, removing: 0b{0:b}".format(config))
       iocon = BUS.transaction(
-              i2c.writing_bytes(self.ADDRESS, REGISTER_IOCON),
+              i2c.writing_bytes(self.ADDRESS, REGISTER['IOCON']),
               i2c.reading(self.ADDRESS, 1))
       log.debug("IOCON before 0b{0:b}".format(iocon[0][0]))
       BUS.transaction(
-              i2c.writing_bytes(self.ADDRESS, REGISTER_IOCON, iocon[0][0] & ~ config))
+              i2c.writing_bytes(self.ADDRESS, REGISTER['IOCON'], iocon[0][0] & ~ config))
       log.debug("IOCON after 0b{0:b}".format(iocon[0][0] & ~ config))
 
   def set_interrupt_handler(self, callback_method):
