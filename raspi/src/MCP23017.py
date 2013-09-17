@@ -23,7 +23,7 @@ BUS = i2c.I2CMaster()
 
 GPIO.setmode(GPIO.BCM)
 
-# Register Mapping for Bank=1 mode
+# Register Mapping for Bank=1 and Bank=0 mode
 MAPPING = { 
   'NOBANK' : {
     'IODIR': 0X00,
