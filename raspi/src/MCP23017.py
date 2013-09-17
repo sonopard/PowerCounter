@@ -24,17 +24,35 @@ BUS = i2c.I2CMaster()
 GPIO.setmode(GPIO.BCM)
 
 # Register Mapping for Bank=1 mode
-REGISTER_IODIR = 0X00
-REGISTER_IPOL = 0X02
-REGISTER_GPINTEN = 0X04
-REGISTER_DEFVAL = 0X06
-REGISTER_INTCON = 0X08
-REGISTER_IOCON = 0X0A
-REGISTER_GPPU = 0X0C
-REGISTER_INTF = 0X0E
-REGISTER_INTCAP = 0X10
-REGISTER_GPIO = 0X12
-REGISTER_OLAT = 0X14
+MAPPING = { 
+  'NOBANK' : {
+    'IODIR': 0X00,
+    'IPOL': 0X02,
+    'GPINTEN': 0X04,
+    'DEFVAL': 0X06,
+    'INTCON': 0X08,
+    'IOCON': 0X0A,
+    'GPPU': 0X0C,
+    'INTF': 0X0E,
+    'INTCAP': 0X10,
+    'GPIO': 0X12,
+    'OLAT': 0X14
+  },
+  'BANK': {
+    'IODIR': 0X00,
+    'IPOL': 0X01,
+    'GPINTEN': 0X02,
+    'DEFVAL': 0X03,
+    'INTCON': 0X04,
+    'IOCON': 0X05,
+    'GPPU': 0X06,
+    'INTF': 0X07,
+    'INTCAP': 0X08,
+    'GPIO': 0X09,
+    'OLAT': 0X0A
+  }
+}
+REGISTER = None
 
 # mapping of pins inside icocon register
 IOCON = {'BANK':0b10000000, 'MIRROR': 0b01000000, 'DISSLW': 0b00010000, 'HAEN': 0b00001000, 'ODR': 0b00000100, 'INTPOL': 0b00000010}
@@ -128,18 +146,28 @@ class MCP23017:
   PORT = None
   INTERRUPT = None
 
-  def __init__(self, address, interrupt):
+  def __init__(self, address, bank):
     log.info("Initialize MCP23017 on 0x{0:x}".format(address))
     #self._lock = Lock()
     self.ADDRESS = address
+
+
+    #Set bank state for easier Addressing of banks (IOCON register)
+    #EVERYTHING else goes to zero
+    if bank == 1: #assume has been bank=0 before
+      BUS.transaction( 
+        i2c.writing_bytes(self.ADDRESS,0x14, IOCON['BANK']),
+        i2c.writing_bytes(self.ADDRESS,0x15, IOCON['BANK']))
+      REGISTER = MAPPING['BANK']
+    elif bank == 0:
+      BUS.transaction( 
+        i2c.writing_bytes(self.ADDRESS,0x14, 0 ),
+        i2c.writing_bytes(self.ADDRESS,0x15, 0 ))
+      REGISTER = MAPPING['NOBANK']
+
+  def init_interrupts(self, interrupt):
     self.INTERRUPT = interrupt
     GPIO.setup(self.INTERRUPT, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-
-    #Set BANK = 1 for easier Addressing of banks (IOCON register)
-    #EVERYTHING else goes to zero
-    BUS.transaction( 
-      i2c.writing_bytes(self.ADDRESS,0x14, 0 ))
-
   #initialize ports and set them for interrupts
   def initialize_ports(self):
     #!important! Initialize Ports after bank has been set to 1
