@@ -9,5 +9,5 @@ chips = [MCP23017(0x20, 1),
 
 while 1:
   for chip in chips:
-    for i in range(0x1B):
-      byte = chip.read(i)
+    chip.read(0x09)
+    chip.read(0x19)
