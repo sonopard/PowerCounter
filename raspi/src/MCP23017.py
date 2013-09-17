@@ -212,6 +212,14 @@ class MCP23017:
               i2c.reading(self.ADDRESS, 1))
     log.debug("Reading from address 0x{0:x} register 0x{1:x} value 0b{2:b}".format(self.ADDRESS, register, byte[0][0]))
     return byte[0][0]
+  
+  def write(self, register, value):
+    log.debug("Writing to address 0x{0:x} register 0x{1:x} value 0b{2:b}".format(self.ADDRESS, register, byte[0][0]))
+    BUS.transaction(
+      i2c.writing_bytes(self.ADDRESS, register ,value),
+    )
+
+  def reset(self):
 
 '''
   def write(self, register):
