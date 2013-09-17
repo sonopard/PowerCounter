@@ -219,9 +219,6 @@ class MCP23017:
     BUS.transaction(
       i2c.writing_bytes(self.ADDRESS, register ,value),
     )
-
-  def reset(self):
-
 '''
   def write(self, register):
     bus.transaction(i2c.writing_bytes(address, expander_registers["gpinten"], 0xFF, 0xFF))
