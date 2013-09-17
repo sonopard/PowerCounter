@@ -104,6 +104,9 @@ class PortManager:
       i2c.reading(self.address, 1))[0][0] ^ 0b11111111
     log.debug("Re-Setting initial state of port is now 0b{0:b}".format(self.state))
     self.external_callback = callback
+    if self.external_callback is None:
+      log.debug("first call of set_callback: enabling RPi interrupt")
+      GPIO.add_event_detect(self.interrupt_pin, GPIO.RISING, callback = self.callback)
 
   def callback(self, channel):
     log.info("Interrupt detected on address 0x{0:x} with prefix 0x{1:x}; channel {2}".format(self.address, self.prefix, channel))
@@ -197,11 +200,11 @@ class MCP23017:
       log.debug("IOCON after 0b{0:b}".format(iocon[0][0] & ~ config))
 
   def set_interrupt_handler(self, callback_method):
-    for name, gpio_pin in self.INTERRUPTS.items():
+    for name, portmanager in self.PORTS.items():
       log.info("Add callback to GPIO {0} (Interrupt {1}) on address 0x{2:x}".format(gpio_pin,name, self.ADDRESS))
       port_manager = self.PORTS[name]
       port_manager.set_callback(callback_method)
-      GPIO.add_event_detect(gpio_pin, GPIO.RISING, callback = port_manager.callback)
+
 
 
   def read(self, register):
